@@ -12,6 +12,7 @@ interface UrlInputProps {
   params: [string, string][]
   onUrlChange: (url: string) => void
   onParamsChange: (params: [string, string][]) => void
+  onSendRequest?: () => void
 }
 
 export const UrlInput: React.FC<UrlInputProps> = ({
@@ -19,6 +20,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({
   params,
   onUrlChange,
   onParamsChange,
+  onSendRequest,
 }) => {
   // 内部状态：完整的 URL（包含参数）
   const [inputValue, setInputValue] = useState('')
@@ -59,7 +61,9 @@ export const UrlInput: React.FC<UrlInputProps> = ({
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      // TODO: 触发发送请求
+      if (onSendRequest) {
+        onSendRequest()
+      }
     }
   }
 

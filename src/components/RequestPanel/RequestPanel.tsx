@@ -223,6 +223,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
                 params={tab.request.params || []}
                 onUrlChange={handleUrlChange}
                 onParamsChange={handleParamsChange}
+                onSendRequest={handleSendRequest}
               />
             </Col>
             <Col flex="none">

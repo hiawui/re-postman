@@ -85,13 +85,11 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
             <TextArea
               value={formatResponse()}
               readOnly
-              autoSize={{ minRows: 10, maxRows: 50 }}
+              rows={12}
               style={{
                 fontFamily: 'monospace',
                 fontSize: '12px',
                 backgroundColor: '#f5f5f5',
-                height: '100%',
-                resize: 'none',
               }}
             />
           )
@@ -181,7 +179,7 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
           <TextArea
             value={formatResponse()}
             readOnly
-            rows={20}
+            rows={12}
             style={{
               fontFamily: 'monospace',
               fontSize: '12px',
@@ -195,7 +193,7 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
           <TextArea
             value={response.body}
             readOnly
-            rows={20}
+            rows={12}
             style={{
               fontFamily: 'monospace',
               fontSize: '12px',

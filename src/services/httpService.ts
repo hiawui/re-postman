@@ -18,10 +18,6 @@ export class HttpService {
       // 构建请求配置
       const config = this.buildRequestConfig(processedRequest)
 
-      console.log('processedRequest', processedRequest)
-      console.log('config', config)
-      console.log('config.headers', config.headers)
-
       // 检查是否在Chrome扩展环境中
       let response: Response
       if (
