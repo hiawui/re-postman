@@ -10,7 +10,11 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "sync-version": "node scripts/sync-version.js",
+    "version:patch": "npm version patch && npm run sync-version",
+    "version:minor": "npm version minor && npm run sync-version",
+    "version:major": "npm version major && npm run sync-version"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
