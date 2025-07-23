@@ -1,5 +1,6 @@
 import type { HttpRequest, HttpResponse, Environment } from '@/types'
 import { VariableReplacer } from '@/utils/variableReplacer'
+import { ErrorHandler } from '@/utils/errorHandler'
 
 export class HttpService {
   static async sendRequest(
@@ -56,32 +57,39 @@ export class HttpService {
 
       return httpResponse
     } catch (error) {
-      let errorMessage =
-        error instanceof Error ? error.message : 'Unknown error'
-
-      // 检查是否在Chrome扩展环境中
-      const isExtension =
-        typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id
-
-      // 处理CORS错误
-      if (errorMessage.includes('CORS') || errorMessage.includes('cors')) {
-        if (isExtension) {
-          errorMessage = `CORS错误: ${errorMessage}\n\nChrome扩展应该不受CORS限制，请检查:\n1. manifest.json中的host_permissions配置\n2. 目标服务器是否支持HTTPS\n3. 请求URL是否正确`
-        } else {
-          errorMessage = `CORS错误: ${errorMessage}\n\n解决方案:\n1. 确保服务器支持CORS\n2. 使用HTTPS协议\n3. 检查请求头配置`
-        }
-      }
+      // 使用统一的错误处理
+      const appError = this.handleRequestError(error, request.url)
 
       return {
         status: 0,
         statusText: 'Network Error',
         headers: {},
-        body: errorMessage,
+        body: appError.message,
         size: 0,
         duration: 0,
         url: request.url,
       }
     }
+  }
+
+  private static handleRequestError(
+    error: unknown,
+    url: string
+  ): ReturnType<typeof ErrorHandler.handleHttpError> {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+
+    // 检查是否为CORS错误
+    if (errorMessage.includes('CORS') || errorMessage.includes('cors')) {
+      return ErrorHandler.handleCorsError(error)
+    }
+
+    // 检查是否为网络错误
+    if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+      return ErrorHandler.handleNetworkError(error)
+    }
+
+    // 其他HTTP错误
+    return ErrorHandler.handleHttpError(error, `Request to ${url}`)
   }
 
   private static async sendRequestAsExtension(

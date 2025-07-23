@@ -24,7 +24,7 @@ import { HeadersEditor } from './HeadersEditor'
 import { BodyEditor } from './BodyEditor'
 
 import { useAppStore } from '@/stores/appStore'
-import type { Tab, Environment } from '@/types'
+import type { Tab, Environment, HttpMethod, BodyType } from '@/types'
 
 interface RequestPanelProps {
   tab: Tab
@@ -58,7 +58,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
   }
 
   const handleMethodChange = (method: string) => {
-    updateRequest(tab.id, { method: method as any })
+    updateRequest(tab.id, { method: method as HttpMethod })
   }
 
   const handleParamsChange = (params: [string, string][]) => {
@@ -74,7 +74,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
   }
 
   const handleBodyTypeChange = (bodyType: string) => {
-    updateRequest(tab.id, { bodyType: bodyType as any })
+    updateRequest(tab.id, { bodyType: bodyType as BodyType })
   }
 
   const handleSendRequest = () => {

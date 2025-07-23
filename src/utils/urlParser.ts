@@ -1,4 +1,5 @@
 import { VariableReplacer } from './variableReplacer'
+import type { Environment } from '@/types'
 
 // 解析 URL 中的查询参数
 export const parseUrlParams = (url: string): [string, string][] => {
@@ -63,7 +64,7 @@ export const buildFullUrlForDisplay = (
 export const buildFullUrlWithEnvironment = (
   baseUrl: string,
   params: [string, string][],
-  environments: any[] = []
+  environments: Environment[] = []
 ): string => {
   try {
     // 先对 URL 进行 URL 解码

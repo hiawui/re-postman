@@ -128,7 +128,6 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
 
   // 删除请求
   const handleDeleteRequest = (collectionId: string, requestId: string) => {
-    console.log('handleDeleteRequest', collectionId, requestId)
     removeRequestFromCollection(collectionId, requestId)
   }
 
