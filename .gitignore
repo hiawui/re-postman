@@ -89,3 +89,7 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# Chrome extension build outputs
+extension/
+*.zip

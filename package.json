@@ -11,10 +11,7 @@
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
-    "sync-version": "node scripts/sync-version.js",
-    "version:patch": "npm version patch && npm run sync-version",
-    "version:minor": "npm version minor && npm run sync-version",
-    "version:major": "npm version major && npm run sync-version"
+    "package:extension": "node scripts/package-extension.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -31,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.1.1",
+    "archiver": "^7.0.1",
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",

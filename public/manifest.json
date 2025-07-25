@@ -3,13 +3,7 @@
   "name": "RePostman",
   "version": "1.0.0",
   "description": "A Postman-like Chrome extension for API testing and debugging",
-  "permissions": [
-    "storage",
-    "activeTab",
-    "scripting",
-    "webRequest",
-    "tabs"
-  ],
+  "permissions": [],
   "host_permissions": [
     "<all_urls>"
   ],
@@ -34,4 +28,4 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }
-} 
+}
