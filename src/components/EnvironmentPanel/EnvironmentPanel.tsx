@@ -9,8 +9,11 @@ import {
   Tag,
   Typography,
   Collapse,
+  Row,
+  Col,
+  Popconfirm,
 } from 'antd'
-import { PlusOutlined, EyeOutlined } from '@ant-design/icons'
+import { PlusOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { VariableReplacer } from '@/utils/variableReplacer'
@@ -46,23 +49,63 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
     setIsAddModalVisible(true)
     setEditingEnvironment(null)
     form.resetFields()
+    // 设置默认的空环境变量行
+    form.setFieldsValue({
+      variables: [{ key: '', value: '' }],
+    })
   }
 
   const handleEditEnvironment = (environment: Environment) => {
     setEditingEnvironment(environment)
     setIsAddModalVisible(true)
-    form.setFieldsValue({
-      name: environment.name,
-      variables: Object.entries(environment.variables).map(([key, value]) => ({
+    const variables = Object.entries(environment.variables).map(
+      ([key, value]) => ({
         key,
         value,
-      })),
+      })
+    )
+    // 确保至少有一行空行
+    if (variables.length === 0) {
+      variables.push({ key: '', value: '' })
+    } else {
+      // 检查最后一行是否为空，如果不是则添加空行
+      const lastVariable = variables[variables.length - 1]
+      if (lastVariable.key.trim() !== '' || lastVariable.value.trim() !== '') {
+        variables.push({ key: '', value: '' })
+      }
+    }
+    form.setFieldsValue({
+      name: environment.name,
+      variables,
     })
   }
 
   const handleSaveEnvironment = async () => {
     try {
       const values = await form.validateFields()
+
+      // 检查环境名称是否重复
+      const isDuplicate = environments.some(env => {
+        if (editingEnvironment) {
+          // 编辑时排除当前环境
+          return env.id !== editingEnvironment.id && env.name === values.name
+        } else {
+          // 新增时检查所有环境
+          return env.name === values.name
+        }
+      })
+
+      if (isDuplicate) {
+        // 显示错误信息
+        form.setFields([
+          {
+            name: 'name',
+            errors: [t('environments.duplicateNameError')],
+          },
+        ])
+        return
+      }
+
       const variables =
         values.variables?.reduce(
           (
@@ -95,6 +138,38 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
     } catch (error) {
       console.error('Form validation failed:', error)
     }
+  }
+
+  // 处理环境变量变化
+  const handleVariableChange = (
+    index: number,
+    field: 'key' | 'value',
+    value: string
+  ) => {
+    const currentVariables = form.getFieldValue('variables') || []
+    const newVariables = [...currentVariables]
+    newVariables[index] = { ...newVariables[index], [field]: value }
+    form.setFieldValue('variables', newVariables)
+  }
+
+  // 处理焦点事件 - 在最后一行获得焦点时添加新行
+  const handleVariableFocus = (index: number) => {
+    const currentVariables = form.getFieldValue('variables') || []
+    if (index === currentVariables.length - 1) {
+      form.setFieldValue('variables', [
+        ...currentVariables,
+        { key: '', value: '' },
+      ])
+    }
+  }
+
+  // 删除环境变量
+  const handleRemoveVariable = (index: number) => {
+    const currentVariables = form.getFieldValue('variables') || []
+    const newVariables = currentVariables.filter(
+      (_: any, i: number) => i !== index
+    )
+    form.setFieldValue('variables', newVariables)
   }
 
   const handleDeleteEnvironment = (environmentId: string) => {
@@ -184,13 +259,18 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
               {t('environments.disable')}
             </Button>
           )}
-          <Button
-            size="small"
-            danger
-            onClick={() => handleDeleteEnvironment(record.id)}
+          <Popconfirm
+            title={t('environments.deleteEnvironmentConfirm')}
+            description={t('environments.deleteEnvironmentDescription')}
+            onConfirm={() => handleDeleteEnvironment(record.id)}
+            okText={t('common.delete')}
+            cancelText={t('common.cancel')}
+            okType="danger"
           >
-            {t('common.delete')}
-          </Button>
+            <Button size="small" danger>
+              {t('common.delete')}
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -319,67 +399,114 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
             <Form.Item
               name="name"
               label={t('environments.environmentName')}
-              rules={[{ required: true, message: t('errors.requiredField') }]}
+              rules={[
+                { required: true, message: t('errors.requiredField') },
+                {
+                  validator: (_, value) => {
+                    if (!value || value.trim() === '') {
+                      return Promise.reject(
+                        new Error(t('errors.requiredField'))
+                      )
+                    }
+                    return Promise.resolve()
+                  },
+                },
+              ]}
             >
               <Input
                 placeholder={t('environments.environmentNamePlaceholder')}
               />
             </Form.Item>
 
-            <Form.List name="variables">
-              {(fields, { add, remove }) => (
+            <Form.List name="variables" initialValue={[{ key: '', value: '' }]}>
+              {fields => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <Space
+                    <Row
                       key={key}
-                      style={{ display: 'flex', marginBottom: 8 }}
-                      align="baseline"
+                      gutter={15}
+                      style={{ marginBottom: 8 }}
+                      align="middle"
                     >
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'key']}
-                        rules={[
-                          {
-                            required: true,
-                            message: t('errors.requiredField'),
-                          },
-                        ]}
-                      >
-                        <Input
-                          placeholder={t('environments.variableName')}
-                          style={{ width: 150 }}
-                        />
-                      </Form.Item>
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'value']}
-                        rules={[
-                          {
-                            required: true,
-                            message: t('errors.requiredField'),
-                          },
-                        ]}
-                      >
-                        <Input
-                          placeholder={t('environments.variableValue')}
-                          style={{ width: 200 }}
-                        />
-                      </Form.Item>
-                      <Button onClick={() => remove(name)} danger>
-                        {t('common.delete')}
-                      </Button>
-                    </Space>
+                      <Col flex="250px">
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'key']}
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Input
+                            placeholder={t('environments.variableName')}
+                            size="small"
+                            value={
+                              form.getFieldValue(['variables', name, 'key']) ||
+                              ''
+                            }
+                            onChange={e =>
+                              handleVariableChange(name, 'key', e.target.value)
+                            }
+                            onFocus={() => handleVariableFocus(name)}
+                            style={{
+                              fontSize: '12px',
+                              border: 'none',
+                              borderBottom: '1px solid #d9d9d9',
+                              borderRadius: 0,
+                              boxShadow: 'none',
+                              paddingLeft: 0,
+                              paddingRight: 0,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col flex="250px">
+                        <Form.Item
+                          {...restField}
+                          name={[name, 'value']}
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Input
+                            placeholder={t('environments.variableValue')}
+                            size="small"
+                            value={
+                              form.getFieldValue([
+                                'variables',
+                                name,
+                                'value',
+                              ]) || ''
+                            }
+                            onChange={e =>
+                              handleVariableChange(
+                                name,
+                                'value',
+                                e.target.value
+                              )
+                            }
+                            onFocus={() => handleVariableFocus(name)}
+                            style={{
+                              fontSize: '12px',
+                              border: 'none',
+                              borderBottom: '1px solid #d9d9d9',
+                              borderRadius: 0,
+                              boxShadow: 'none',
+                              paddingLeft: 0,
+                              paddingRight: 0,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col flex="none">
+                        {name !== fields.length - 1 && (
+                          <Button
+                            type="text"
+                            icon={<DeleteOutlined />}
+                            size="small"
+                            onClick={() => handleRemoveVariable(name)}
+                            tabIndex={-1}
+                            style={{ color: '#ff4d4f' }}
+                          />
+                        )}
+                      </Col>
+                    </Row>
                   ))}
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                    >
-                      {t('environments.addVariable')}
-                    </Button>
-                  </Form.Item>
                 </>
               )}
             </Form.List>

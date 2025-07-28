@@ -114,7 +114,10 @@
     "disable": "停用",
     "variables": "个",
     "mergedVariablesHeader": "已启用环境的合并变量（按启用顺序排序）",
-    "unknown": "未知"
+    "unknown": "未知",
+    "duplicateNameError": "环境名称已存在",
+    "deleteEnvironmentConfirm": "删除环境",
+    "deleteEnvironmentDescription": "确定要删除此环境吗？此操作无法撤销。"
   },
   "services": {
     "networkError": "网络错误",
