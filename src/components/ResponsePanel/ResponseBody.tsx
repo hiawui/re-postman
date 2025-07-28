@@ -95,30 +95,30 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
           )
         }
 
-        // HTML 渲染
+        // HTML 渲染 - 使用iframe
         if (contentType === 'html') {
           return (
             <div
-              className="html-preview-container"
               style={{
                 border: '1px solid #d9d9d9',
                 borderRadius: '6px',
-                padding: '12px',
-                backgroundColor: '#fff',
-                minHeight: '200px',
-                maxHeight: '600px',
                 overflow: 'auto',
-                // 样式隔离
-                all: 'initial',
-                fontFamily:
-                  'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                color: '#333',
-                boxSizing: 'border-box',
+                resize: 'vertical',
+                minHeight: '400px',
+                width: '100%',
               }}
-              dangerouslySetInnerHTML={{ __html: response.body }}
-            />
+            >
+              <iframe
+                srcDoc={response.body}
+                sandbox="allow-scripts allow-same-origin"
+                title="HTML Preview"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
+              />
+            </div>
           )
         }
 

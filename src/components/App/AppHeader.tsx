@@ -23,11 +23,7 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(
           </Title>
           <Space>
             <LanguageSwitcher />
-            <Button
-              icon={<EnvironmentOutlined />}
-              size="small"
-              onClick={onEnvironmentClick}
-            >
+            <Button icon={<EnvironmentOutlined />} onClick={onEnvironmentClick}>
               {t('navigation.environments')}
             </Button>
           </Space>
