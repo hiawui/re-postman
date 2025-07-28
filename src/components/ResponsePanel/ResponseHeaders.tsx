@@ -1,5 +1,6 @@
 import React from 'react'
 import { Table, Typography } from 'antd'
+import { useTranslation } from 'react-i18next'
 import type { ColumnsType } from 'antd/es/table'
 
 const { Text } = Typography
@@ -17,6 +18,8 @@ interface ResponseHeadersProps {
 export const ResponseHeaders: React.FC<ResponseHeadersProps> = ({
   headers,
 }) => {
+  const { t } = useTranslation()
+
   const dataSource: HeaderItem[] = Object.entries(headers).map(
     ([name, value]) => ({
       key: name,
@@ -27,7 +30,7 @@ export const ResponseHeaders: React.FC<ResponseHeadersProps> = ({
 
   const columns: ColumnsType<HeaderItem> = [
     {
-      title: 'Name',
+      title: t('request.key'),
       dataIndex: 'name',
       key: 'name',
       width: '40%',
@@ -38,7 +41,7 @@ export const ResponseHeaders: React.FC<ResponseHeadersProps> = ({
       ),
     },
     {
-      title: 'Value',
+      title: t('request.value'),
       dataIndex: 'value',
       key: 'value',
       width: '60%',

@@ -1,5 +1,6 @@
 import { notification } from 'antd'
 import type { NotificationArgsProps } from 'antd'
+import i18n from '@/i18n'
 
 export class NotificationService {
   static success(
@@ -60,14 +61,16 @@ export class NotificationService {
 
   // 环境变量相关通知
   static environmentCreated(name: string) {
-    this.success('环境创建成功', `环境 "${name}" 已创建`)
+    this.success(
+      i18n.t('services.environmentCreated'),
+      `${i18n.t('environments.environmentName')} "${name}" ${i18n.t('services.environmentCreated')}`
+    )
   }
 
   static environmentDeleted(name: string) {
-    this.info('环境删除成功', `环境 "${name}" 已删除`)
-  }
-
-  static environmentSwitched(name: string) {
-    this.info('环境切换成功', `当前环境: "${name}"`)
+    this.info(
+      i18n.t('services.environmentDeleted'),
+      `${i18n.t('environments.environmentName')} "${name}" ${i18n.t('services.environmentDeleted')}`
+    )
   }
 }

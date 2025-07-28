@@ -1,6 +1,7 @@
 import React from 'react'
 import { Card, Row, Col, Statistic } from 'antd'
 import { ClockCircleOutlined, FileTextOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import type { HttpResponse } from '@/types'
 
 interface ResponseStatusProps {
@@ -8,12 +9,14 @@ interface ResponseStatusProps {
 }
 
 export const ResponseStatus: React.FC<ResponseStatusProps> = ({ response }) => {
+  const { t } = useTranslation()
+
   return (
     <Card size="small">
       <Row gutter={16}>
         <Col span={8}>
           <Statistic
-            title="Status"
+            title={t('response.status')}
             value={response.status}
             suffix={response.statusText}
             valueStyle={{
@@ -26,17 +29,17 @@ export const ResponseStatus: React.FC<ResponseStatusProps> = ({ response }) => {
         </Col>
         <Col span={8}>
           <Statistic
-            title="Time"
+            title={t('response.time')}
             value={response.duration}
-            suffix="ms"
+            suffix={t('response.milliseconds')}
             prefix={<ClockCircleOutlined />}
           />
         </Col>
         <Col span={8}>
           <Statistic
-            title="Size"
+            title={t('response.size')}
             value={response.size}
-            suffix="bytes"
+            suffix={t('response.bytes')}
             prefix={<FileTextOutlined />}
           />
         </Col>

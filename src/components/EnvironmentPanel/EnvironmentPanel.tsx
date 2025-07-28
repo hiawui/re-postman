@@ -164,7 +164,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
       render: (_text: string, record: Environment) => (
         <Space>
           <Button size="small" onClick={() => handleEditEnvironment(record)}>
-            {t('environments.edit')}
+            {t('common.edit')}
           </Button>
           {!activeEnvironmentIds.includes(record.id) ? (
             <Button
@@ -189,7 +189,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
             danger
             onClick={() => handleDeleteEnvironment(record.id)}
           >
-            {t('environments.delete')}
+            {t('common.delete')}
           </Button>
         </Space>
       ),
@@ -302,7 +302,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
         <Modal
           title={
             editingEnvironment
-              ? t('environments.editEnvironment')
+              ? t('common.edit')
               : t('environments.addEnvironment')
           }
           open={isAddModalVisible}
@@ -366,7 +366,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
                         />
                       </Form.Item>
                       <Button onClick={() => remove(name)} danger>
-                        {t('environments.deleteVariable')}
+                        {t('common.delete')}
                       </Button>
                     </Space>
                   ))}

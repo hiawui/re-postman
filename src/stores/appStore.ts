@@ -4,6 +4,7 @@ import { subscribeWithSelector } from 'zustand/middleware'
 import { HttpService } from '@/services/httpService'
 import { NotificationService } from '@/services/notificationService'
 import { buildFullUrlWithEnvironment } from '@/utils/urlParser'
+import i18n from '@/i18n'
 import type {
   AppState,
   Tab,
@@ -64,7 +65,7 @@ const generateId = () => Math.random().toString(36).substr(2, 9)
 
 const createDefaultRequest = (): HttpRequest => ({
   id: generateId(),
-  name: 'New Request',
+  name: i18n.t('store.newRequest'),
   method: 'GET',
   url: '',
   headers: [], // 移除默认的 Content-Type header
@@ -75,7 +76,7 @@ const createDefaultRequest = (): HttpRequest => ({
 
 const createDefaultTab = (request?: Partial<HttpRequest>): Tab => ({
   id: generateId(),
-  title: request?.name || 'New Request',
+  title: request?.name || i18n.t('store.newRequest'),
   request: { ...createDefaultRequest(), ...request },
   isActive: false,
   isLoading: false,
@@ -395,10 +396,6 @@ export const useAppStore = create<AppStore>()(
         },
 
         activateEnvironment: (environmentId: string) => {
-          const state = get()
-          const environment = state.environments.find(
-            e => e.id === environmentId
-          )
           set(state => ({
             activeEnvironmentIds: state.activeEnvironmentIds.includes(
               environmentId
@@ -406,9 +403,6 @@ export const useAppStore = create<AppStore>()(
               ? state.activeEnvironmentIds
               : [...state.activeEnvironmentIds, environmentId],
           }))
-          if (environment) {
-            NotificationService.environmentSwitched(environment.name)
-          }
         },
 
         deactivateEnvironment: (environmentId: string) => {

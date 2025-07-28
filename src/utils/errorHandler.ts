@@ -1,4 +1,5 @@
 import { message } from 'antd'
+import i18n from '@/i18n'
 
 export interface AppError {
   code: string
@@ -33,7 +34,7 @@ export class ErrorHandler {
     } else {
       appError = {
         code: 'UNKNOWN_ERROR',
-        message: 'An unknown error occurred',
+        message: i18n.t('services.unknownError'),
         details: context,
         timestamp: Date.now(),
       }
@@ -71,8 +72,8 @@ export class ErrorHandler {
     const appError: AppError = {
       code: 'CORS_ERROR',
       message: isExtension
-        ? 'CORS错误: Chrome扩展应该不受CORS限制，请检查manifest.json配置'
-        : 'CORS错误: 请确保服务器支持CORS或使用HTTPS协议',
+        ? i18n.t('services.corsErrorExtension')
+        : i18n.t('services.corsErrorWeb'),
       details: error instanceof Error ? error.message : String(error),
       timestamp: Date.now(),
     }
@@ -123,16 +124,16 @@ export class ErrorHandler {
     // 根据错误类型提供更友好的消息
     switch (error.code) {
       case 'CORS_ERROR':
-        userMessage = '跨域请求被阻止，请检查网络设置'
+        userMessage = i18n.t('services.crossOriginBlocked')
         break
       case 'NETWORK_ERROR':
-        userMessage = '网络连接失败，请检查网络设置'
+        userMessage = i18n.t('services.networkConnectionFailed')
         break
       case 'VALIDATION_ERROR':
         userMessage = error.message
         break
       default:
-        userMessage = '操作失败，请稍后重试'
+        userMessage = i18n.t('services.operationFailed')
     }
 
     message.error(userMessage)
@@ -146,19 +147,19 @@ export class ErrorHandler {
       const message = error.message.toLowerCase()
 
       if (message.includes('fetch')) {
-        return '网络请求失败，请检查网络连接'
+        return i18n.t('services.networkRequestFailed')
       }
       if (message.includes('timeout')) {
-        return '请求超时，请稍后重试'
+        return i18n.t('services.requestTimeout')
       }
       if (message.includes('abort')) {
-        return '请求被取消'
+        return i18n.t('services.requestCancelled')
       }
 
       return error.message
     }
 
-    return '网络连接失败'
+    return i18n.t('services.networkConnectionFailed')
   }
 
   /**

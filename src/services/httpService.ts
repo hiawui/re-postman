@@ -1,6 +1,7 @@
 import type { HttpRequest, HttpResponse, Environment } from '@/types'
 import { VariableReplacer } from '@/utils/variableReplacer'
 import { ErrorHandler } from '@/utils/errorHandler'
+import i18n from '@/i18n'
 
 export class HttpService {
   static async sendRequest(
@@ -62,7 +63,7 @@ export class HttpService {
 
       return {
         status: 0,
-        statusText: 'Network Error',
+        statusText: i18n.t('services.networkError'),
         headers: {},
         body: appError.message,
         size: 0,

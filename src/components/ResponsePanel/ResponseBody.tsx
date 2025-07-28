@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Input, Select, Space, Button } from 'antd'
 import { CopyOutlined, DownloadOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import type { HttpResponse } from '@/types'
 
 const { TextArea } = Input
@@ -13,6 +14,7 @@ interface ResponseBodyProps {
 type ViewMode = 'preview' | 'raw'
 
 export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
+  const { t } = useTranslation()
   const [viewMode, setViewMode] = useState<ViewMode>('preview')
 
   const detectContentType = (): string => {
@@ -67,7 +69,7 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'response.txt'
+    a.download = t('response.downloadFileName')
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -111,7 +113,7 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
               <iframe
                 srcDoc={response.body}
                 sandbox="allow-scripts allow-same-origin"
-                title="HTML Preview"
+                title={t('response.htmlPreview')}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -212,15 +214,15 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
       {/* 工具栏 */}
       <div className="response-toolbar">
         <Space>
-          <span>View:</span>
+          <span>{t('response.view')}:</span>
           <Select
             value={viewMode}
             onChange={setViewMode}
             style={{ width: 120 }}
             size="small"
           >
-            <Option value="preview">Preview</Option>
-            <Option value="raw">Raw</Option>
+            <Option value="preview">{t('response.preview')}</Option>
+            <Option value="raw">{t('response.raw')}</Option>
           </Select>
         </Space>
 
@@ -230,14 +232,14 @@ export const ResponseBody: React.FC<ResponseBodyProps> = ({ response }) => {
             size="small"
             onClick={copyToClipboard}
           >
-            Copy
+            {t('response.copy')}
           </Button>
           <Button
             icon={<DownloadOutlined />}
             size="small"
             onClick={downloadResponse}
           >
-            Download
+            {t('response.download')}
           </Button>
         </Space>
       </div>

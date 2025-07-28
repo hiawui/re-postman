@@ -303,7 +303,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
 
       <div style={{ marginBottom: 12 }}>
         <span style={{ marginRight: '8px', fontSize: '12px' }}>
-          {t('request.body')} {t('common.type')}:
+          {t('common.type')}:
         </span>
         <Select
           value={bodyType}
