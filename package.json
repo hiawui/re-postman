@@ -11,7 +11,12 @@
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
-    "package:extension": "node scripts/package-extension.js"
+    "package:extension": "node scripts/package-extension.js",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -39,7 +44,14 @@
     "sharp": "^0.34.3",
     "terser": "^5.43.1",
     "typescript": "^5.2.2",
-    "vite": "^4.5.0"
+    "vite": "^4.5.0",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/user-event": "^14.5.1",
+    "vitest": "^1.0.4",
+    "@vitest/ui": "^1.0.4",
+    "jsdom": "^22.1.0",
+    "@vitest/coverage-v8": "^1.0.4"
   },
   "keywords": [
     "chrome-extension",
