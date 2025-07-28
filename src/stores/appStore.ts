@@ -67,7 +67,7 @@ const createDefaultRequest = (): HttpRequest => ({
   name: 'New Request',
   method: 'GET',
   url: '',
-  headers: [['Content-Type', 'application/json']],
+  headers: [], // 移除默认的 Content-Type header
   bodyType: 'json',
   createdAt: Date.now(),
   updatedAt: Date.now(),

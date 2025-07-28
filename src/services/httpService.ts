@@ -140,29 +140,32 @@ export class HttpService {
       request.headers.filter(([k, v]) => k.trim() && v.trim())
     )
 
-    // 如果没有设置Content-Type，根据请求体类型自动设置
-    if (!headers['Content-Type'] && request.body) {
-      switch (request.bodyType) {
-        case 'json':
-          headers['Content-Type'] = 'application/json'
-          break
-        case 'xml':
-          headers['Content-Type'] = 'application/xml'
-          break
-        case 'form-data':
-          // FormData 不需要设置 Content-Type，浏览器会自动设置
-          break
-        case 'x-www-form-urlencoded':
-          headers['Content-Type'] = 'application/x-www-form-urlencoded'
-          break
-        default:
-          // 尝试解析为 JSON，如果失败则设为 text/plain
-          try {
-            JSON.parse(request.body)
+    // 如果没有设置Content-Type，根据请求体类型和HTTP方法自动设置
+    if (!headers['Content-Type'] && request.body && request.body.trim()) {
+      // 只有有请求体的方法才需要设置 Content-Type
+      if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+        switch (request.bodyType) {
+          case 'json':
             headers['Content-Type'] = 'application/json'
-          } catch {
-            headers['Content-Type'] = 'text/plain'
-          }
+            break
+          case 'xml':
+            headers['Content-Type'] = 'application/xml'
+            break
+          case 'form-data':
+            // FormData 不需要设置 Content-Type，浏览器会自动设置
+            break
+          case 'x-www-form-urlencoded':
+            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            break
+          default:
+            // 尝试解析为 JSON，如果失败则设为 text/plain
+            try {
+              JSON.parse(request.body)
+              headers['Content-Type'] = 'application/json'
+            } catch {
+              headers['Content-Type'] = 'text/plain'
+            }
+        }
       }
     }
 
