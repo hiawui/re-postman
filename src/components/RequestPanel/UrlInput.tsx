@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Input } from 'antd'
 import { GlobalOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import {
   extractBaseUrl,
   parseUrlParams,
@@ -22,6 +23,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({
   onParamsChange,
   onSendRequest,
 }) => {
+  const { t } = useTranslation()
   // 内部状态：完整的 URL（包含参数）
   const [inputValue, setInputValue] = useState('')
   // 焦点状态：是否正在编辑
@@ -70,7 +72,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({
   return (
     <Input
       size="large"
-      placeholder="Enter request URL"
+      placeholder={t('request.enterRequestUrl')}
       value={inputValue}
       onChange={handleChange}
       onFocus={handleFocus}

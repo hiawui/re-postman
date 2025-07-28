@@ -11,6 +11,7 @@ import {
   Collapse,
 } from 'antd'
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { VariableReplacer } from '@/utils/variableReplacer'
 import type { Environment } from '@/types'
@@ -25,6 +26,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
   visible,
   onClose,
 }) => {
+  const { t } = useTranslation()
   const {
     environments,
     activeEnvironmentIds,
@@ -133,7 +135,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
 
   const columns = [
     {
-      title: '环境名称',
+      title: t('environments.environmentName'),
       dataIndex: 'name',
       key: 'name',
       render: (_text: string, record: Environment) => (
@@ -142,25 +144,27 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
             {record.name}
           </Text>
           {activeEnvironmentIds.includes(record.id) && (
-            <Tag color="green">已启用</Tag>
+            <Tag color="green">{t('environments.enabled')}</Tag>
           )}
         </Space>
       ),
     },
     {
-      title: '变量数量',
+      title: t('environments.variableCount'),
       key: 'variableCount',
       render: (_text: string, record: Environment) => (
-        <Text>{Object.keys(record.variables).length} 个</Text>
+        <Text>
+          {Object.keys(record.variables).length} {t('environments.variables')}
+        </Text>
       ),
     },
     {
-      title: '操作',
+      title: t('environments.actions'),
       key: 'actions',
       render: (_text: string, record: Environment) => (
         <Space>
           <Button size="small" onClick={() => handleEditEnvironment(record)}>
-            编辑
+            {t('environments.edit')}
           </Button>
           {!activeEnvironmentIds.includes(record.id) ? (
             <Button
@@ -168,7 +172,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
               type="primary"
               onClick={() => handleActivate(record.id)}
             >
-              启用
+              {t('environments.enable')}
             </Button>
           ) : (
             <Button
@@ -177,7 +181,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
               danger
               onClick={() => handleDeactivate(record.id)}
             >
-              停用
+              {t('environments.disable')}
             </Button>
           )}
           <Button
@@ -185,7 +189,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
             danger
             onClick={() => handleDeleteEnvironment(record.id)}
           >
-            删除
+            {t('environments.delete')}
           </Button>
         </Space>
       ),
@@ -194,7 +198,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
 
   return (
     <Modal
-      title="环境变量管理"
+      title={t('environments.environmentManagement')}
       open={visible}
       onCancel={onClose}
       footer={null}
@@ -209,16 +213,16 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
           }}
         >
           <div>
-            <Text>管理不同环境的变量配置</Text>
+            <Text>{t('environments.manageVariables')}</Text>
             <div style={{ marginTop: 4 }}>
               <Text type="secondary">
-                启用环境：点击"启用"按钮将环境应用到请求中，后面的环境会覆盖前面的环境
+                {t('environments.enableEnvironment')}
               </Text>
             </div>
             {activeEnvironmentIds.length > 0 && (
               <div style={{ marginTop: 4 }}>
                 <Text type="secondary">
-                  已启用环境:{' '}
+                  {t('environments.enabledEnvironments')}:{' '}
                   {activeEnvironmentIds
                     .map(id => environments.find(e => e.id === id)?.name)
                     .filter(Boolean)
@@ -232,14 +236,16 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
               icon={<EyeOutlined />}
               onClick={() => setShowMergedVariables(!showMergedVariables)}
             >
-              {showMergedVariables ? '隐藏' : '预览'}合并变量
+              {showMergedVariables
+                ? t('environments.hideMergedVariables')
+                : t('environments.previewMergedVariables')}
             </Button>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddEnvironment}
             >
-              添加环境
+              {t('environments.addEnvironment')}
             </Button>
           </Space>
         </div>
@@ -256,7 +262,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
         {showMergedVariables && activeEnvironmentIds.length > 0 && (
           <Collapse defaultActiveKey={['merged']}>
             <Collapse.Panel
-              header="已启用环境的合并变量（按启用顺序排序）"
+              header={t('environments.mergedVariablesHeader')}
               key="merged"
             >
               <div style={{ maxHeight: 300, overflow: 'auto' }}>
@@ -279,7 +285,10 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
                         <Text type="secondary">{value}</Text>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <Tag color="blue">来自: {source?.name || '未知'}</Tag>
+                        <Tag color="blue">
+                          {t('environments.from')}:{' '}
+                          {source?.name || t('environments.unknown')}
+                        </Tag>
                       </div>
                     </div>
                   )
@@ -291,22 +300,30 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
 
         {/* 添加/编辑环境模态框 */}
         <Modal
-          title={editingEnvironment ? '编辑环境' : '添加环境'}
+          title={
+            editingEnvironment
+              ? t('environments.editEnvironment')
+              : t('environments.addEnvironment')
+          }
           open={isAddModalVisible}
           onOk={handleSaveEnvironment}
           onCancel={() => {
             setIsAddModalVisible(false)
             form.resetFields()
           }}
+          okText={t('common.ok')}
+          cancelText={t('common.cancel')}
           width={600}
         >
           <Form form={form} layout="vertical">
             <Form.Item
               name="name"
-              label="环境名称"
-              rules={[{ required: true, message: '请输入环境名称' }]}
+              label={t('environments.environmentName')}
+              rules={[{ required: true, message: t('errors.requiredField') }]}
             >
-              <Input placeholder="例如: 开发环境" />
+              <Input
+                placeholder={t('environments.environmentNamePlaceholder')}
+              />
             </Form.Item>
 
             <Form.List name="variables">
@@ -321,19 +338,35 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
                       <Form.Item
                         {...restField}
                         name={[name, 'key']}
-                        rules={[{ required: true, message: '请输入变量名' }]}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('errors.requiredField'),
+                          },
+                        ]}
                       >
-                        <Input placeholder="变量名" style={{ width: 150 }} />
+                        <Input
+                          placeholder={t('environments.variableName')}
+                          style={{ width: 150 }}
+                        />
                       </Form.Item>
                       <Form.Item
                         {...restField}
                         name={[name, 'value']}
-                        rules={[{ required: true, message: '请输入变量值' }]}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('errors.requiredField'),
+                          },
+                        ]}
                       >
-                        <Input placeholder="变量值" style={{ width: 200 }} />
+                        <Input
+                          placeholder={t('environments.variableValue')}
+                          style={{ width: 200 }}
+                        />
                       </Form.Item>
                       <Button onClick={() => remove(name)} danger>
-                        删除
+                        {t('environments.deleteVariable')}
                       </Button>
                     </Space>
                   ))}
@@ -344,7 +377,7 @@ export const EnvironmentPanel: React.FC<EnvironmentPanelProps> = ({
                       block
                       icon={<PlusOutlined />}
                     >
-                      添加变量
+                      {t('environments.addVariable')}
                     </Button>
                   </Form.Item>
                 </>

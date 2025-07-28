@@ -6,6 +6,7 @@ import {
   DeleteOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import type { Collection, HttpRequest } from '@/types'
 import {
@@ -24,6 +25,7 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
   onSelectRequest,
   selectedRequestId,
 }) => {
+  const { t } = useTranslation()
   const {
     collections,
     addCollection,
@@ -80,7 +82,7 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     }
   }
 
-  // 拖拽排序处理函数
+  // Handle drag and drop reordering
   const handleDragEnd = (collectionId: string, result: DropResult) => {
     if (!result.destination) return
     const collection = collections.find(c => c.id === collectionId)
@@ -91,7 +93,7 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     reorderRequestsInCollection(collectionId, currentRequestIds)
   }
 
-  // 编辑请求
+  // Edit request
   const handleEditRequest = (request: HttpRequest) => {
     setEditingRequest(request)
     setIsEditRequestModalVisible(true)
@@ -102,12 +104,12 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     })
   }
 
-  // 保存请求编辑
+  // Save request edit
   const handleSaveRequest = async () => {
     try {
       const values = await requestForm.validateFields()
       if (editingRequest) {
-        // 找到请求所在的集合
+        // Find the collection containing the request
         const collection = collections.find(c =>
           c.requests.some(r => r.id === editingRequest.id)
         )
@@ -126,17 +128,17 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     }
   }
 
-  // 删除请求
+  // Delete request
   const handleDeleteRequest = (collectionId: string, requestId: string) => {
     removeRequestFromCollection(collectionId, requestId)
   }
 
-  // 选择请求
+  // Select request
   const handleSelectRequest = (request: HttpRequest, collectionId: string) => {
     onSelectRequest(request, collectionId)
   }
 
-  // 编辑集合
+  // Edit collection
   const handleEditCollection = (collection: Collection) => {
     setEditingCollectionForEdit(collection)
     setIsEditCollectionModalVisible(true)
@@ -146,7 +148,7 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     })
   }
 
-  // 保存集合编辑
+  // Save collection edit
   const handleSaveCollectionEdit = async () => {
     try {
       const values = await collectionForm.validateFields()
@@ -163,7 +165,7 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     }
   }
 
-  // 删除集合
+  // Delete collection
   const handleDeleteCollection = (collectionId: string) => {
     removeCollection(collectionId)
   }
@@ -178,13 +180,16 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
             size="small"
             onClick={handleAddCollection}
           >
-            New
+            {t('collections.newCollection')}
           </Button>
         </Space>
       </div>
 
       {collections.length === 0 ? (
-        <Empty description="No collections yet" style={{ marginTop: 40 }} />
+        <Empty
+          description={t('collections.noCollections')}
+          style={{ marginTop: 40 }}
+        />
       ) : (
         <div className="collections-list">
           {collections.map(collection => (
@@ -209,17 +214,17 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
                       handleEditCollection(collection)
                     }}
                     style={{ padding: '0 4px' }}
-                    title="编辑集合"
+                    title={t('collections.editCollectionTooltip')}
                   />
                   <Popconfirm
-                    title="确定要删除这个集合吗？"
-                    description="删除后无法恢复，集合中的所有请求也会被删除。"
+                    title={t('collections.deleteCollectionConfirm')}
+                    description={t('collections.deleteCollectionDescription')}
                     onConfirm={e => {
                       e?.stopPropagation()
                       handleDeleteCollection(collection.id)
                     }}
-                    okText="确定"
-                    cancelText="取消"
+                    okText={t('common.delete')}
+                    cancelText={t('common.cancel')}
                     okType="danger"
                   >
                     <Button
@@ -228,12 +233,12 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
                       icon={<DeleteOutlined />}
                       onClick={e => e.stopPropagation()}
                       style={{ padding: '0 4px' }}
-                      title="删除集合"
+                      title={t('collections.deleteCollectionTooltip')}
                     />
                   </Popconfirm>
                 </Space>
               </div>
-              {/* 拖拽排序列表 */}
+              {/* Drag and drop reorderable list */}
               <DragDropContext
                 onDragEnd={result => handleDragEnd(collection.id, result)}
               >
@@ -302,9 +307,10 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
                                     handleEditRequest(request)
                                   }}
                                   style={{ padding: '0 4px' }}
+                                  title={t('collections.editRequestTooltip')}
                                 />
                                 <Popconfirm
-                                  title="确定要删除这个请求吗？"
+                                  title={t('collections.deleteRequestConfirm')}
                                   onConfirm={e => {
                                     e?.stopPropagation()
                                     handleDeleteRequest(
@@ -312,8 +318,8 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
                                       request.id
                                     )
                                   }}
-                                  okText="确定"
-                                  cancelText="取消"
+                                  okText={t('common.delete')}
+                                  cancelText={t('common.cancel')}
                                 >
                                   <Button
                                     type="text"
@@ -321,6 +327,9 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
                                     icon={<DeleteOutlined />}
                                     onClick={e => e.stopPropagation()}
                                     style={{ padding: '0 4px' }}
+                                    title={t(
+                                      'collections.deleteRequestTooltip'
+                                    )}
                                   />
                                 </Popconfirm>
                               </Space>
@@ -338,68 +347,78 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
         </div>
       )}
 
-      {/* 添加/编辑集合模态框 */}
+      {/* Add/Edit Collection Modal */}
       <Modal
-        title={editingCollection ? '编辑集合' : '添加集合'}
+        title={
+          editingCollection
+            ? t('collections.editCollection')
+            : t('collections.newCollection')
+        }
         open={isAddModalVisible}
         onOk={handleSaveCollection}
         onCancel={() => {
           setIsAddModalVisible(false)
           form.resetFields()
         }}
+        okText={t('common.ok')}
+        cancelText={t('common.cancel')}
         width={500}
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="集合名称"
-            rules={[{ required: true, message: '请输入集合名称' }]}
+            label={t('collections.collectionName')}
+            rules={[{ required: true, message: t('errors.requiredField') }]}
           >
-            <Input placeholder="例如: API测试集合" />
+            <Input placeholder={t('collections.collectionNamePlaceholder')} />
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* 编辑请求模态框 */}
+      {/* Edit Request Modal */}
       <Modal
-        title="编辑请求"
+        title={t('collections.editRequest')}
         open={isEditRequestModalVisible}
         onOk={handleSaveRequest}
         onCancel={() => {
           setIsEditRequestModalVisible(false)
           requestForm.resetFields()
         }}
+        okText={t('common.ok')}
+        cancelText={t('common.cancel')}
         width={500}
       >
         <Form form={requestForm} layout="vertical">
           <Form.Item
             name="name"
-            label="请求名称"
-            rules={[{ required: true, message: '请输入请求名称' }]}
+            label={t('request.requestName')}
+            rules={[{ required: true, message: t('errors.requiredField') }]}
           >
-            <Input placeholder="例如: 获取用户信息" />
+            <Input placeholder={t('collections.requestNamePlaceholder')} />
           </Form.Item>
         </Form>
       </Modal>
 
-      {/* 编辑集合模态框 */}
+      {/* Edit Collection Modal */}
       <Modal
-        title="编辑集合"
+        title={t('collections.editCollection')}
         open={isEditCollectionModalVisible}
         onOk={handleSaveCollectionEdit}
         onCancel={() => {
           setIsEditCollectionModalVisible(false)
           collectionForm.resetFields()
         }}
+        okText={t('common.ok')}
+        cancelText={t('common.cancel')}
         width={500}
       >
         <Form form={collectionForm} layout="vertical">
           <Form.Item
             name="name"
-            label="集合名称"
-            rules={[{ required: true, message: '请输入集合名称' }]}
+            label={t('collections.collectionName')}
+            rules={[{ required: true, message: t('errors.requiredField') }]}
           >
-            <Input placeholder="例如: API测试集合" />
+            <Input placeholder={t('collections.collectionNamePlaceholder')} />
           </Form.Item>
         </Form>
       </Modal>

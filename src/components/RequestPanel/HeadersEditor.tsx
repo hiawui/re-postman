@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Input, Row, Col, List, Button } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { searchHeaders, type HttpHeader } from '@/utils/httpHeaders'
 
 interface HeadersEditorProps {
@@ -12,6 +13,7 @@ export const HeadersEditor: React.FC<HeadersEditorProps> = ({
   value,
   onChange,
 }) => {
+  const { t } = useTranslation()
   const [headers, setHeaders] = useState<Array<{ key: string; value: string }>>(
     () => {
       return value.length > 0
@@ -215,7 +217,7 @@ export const HeadersEditor: React.FC<HeadersEditorProps> = ({
           borderBottom: '1px solid #f0f0f0',
         }}
       >
-        Headers
+        {t('request.headers')}
       </div>
 
       {headers.map((header, index) => (
@@ -223,7 +225,7 @@ export const HeadersEditor: React.FC<HeadersEditorProps> = ({
           <Col flex="250px">
             <div style={{ position: 'relative', width: '100%' }}>
               <Input
-                placeholder="Header"
+                placeholder={t('request.header')}
                 value={header.key}
                 onChange={e => handleHeaderKeyChange(index, e.target.value)}
                 onFocus={() => handleHeaderKeyFocus(index)}
@@ -258,7 +260,7 @@ export const HeadersEditor: React.FC<HeadersEditorProps> = ({
           </Col>
           <Col flex="250px">
             <Input
-              placeholder="Value"
+              placeholder={t('request.value')}
               value={header.value}
               onChange={e => handleHeaderChange(index, 'value', e.target.value)}
               onFocus={() => handleFocus(index)}

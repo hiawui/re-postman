@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Row, Col, Button } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 
 interface ParamsEditorProps {
   value: [string, string][]
@@ -11,6 +12,7 @@ export const ParamsEditor: React.FC<ParamsEditorProps> = ({
   value,
   onChange,
 }) => {
+  const { t } = useTranslation()
   const [params, setParams] = useState<Array<{ key: string; value: string }>>(
     () => {
       return value.length > 0
@@ -96,14 +98,14 @@ export const ParamsEditor: React.FC<ParamsEditorProps> = ({
           borderBottom: '1px solid #f0f0f0',
         }}
       >
-        URL Parameters
+        {t('request.urlParameters')}
       </div>
 
       {params.map((param, index) => (
         <Row key={index} gutter={15} style={{ marginBottom: 8 }} align="middle">
           <Col flex="250px">
             <Input
-              placeholder="URL Parameter Key"
+              placeholder={t('request.urlParameterKey')}
               value={param.key}
               onChange={e => handleParamChange(index, 'key', e.target.value)}
               onFocus={() => handleFocus(index)}
@@ -122,7 +124,7 @@ export const ParamsEditor: React.FC<ParamsEditorProps> = ({
           </Col>
           <Col flex="250px">
             <Input
-              placeholder="Value"
+              placeholder={t('request.value')}
               value={param.value}
               onChange={e => handleParamChange(index, 'value', e.target.value)}
               onFocus={() => handleFocus(index)}

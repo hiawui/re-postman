@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { ConfigProvider, Layout } from 'antd'
 import { FolderOutlined, HistoryOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { TabBar } from '@/components/Tabs/TabBar'
 import { EnvironmentPanel } from '@/components/EnvironmentPanel/EnvironmentPanel'
 import { ErrorBoundary } from '@/components/ErrorBoundary/ErrorBoundary'
@@ -13,6 +14,7 @@ import '@/styles/App.css'
 const { Content } = Layout
 
 const App: React.FC = React.memo(() => {
+  const { t } = useTranslation()
   const { activeTabId, tabs, handleSelectRequest, handleAddTab } =
     useAppOptimized()
 
@@ -25,7 +27,7 @@ const App: React.FC = React.memo(() => {
   const dragRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // 初始化时如果没有标签页，创建一个默认标签页
+    // Create a default tab if no tabs exist on initialization
     if (tabs.length === 0) {
       handleAddTab()
     }
@@ -55,15 +57,15 @@ const App: React.FC = React.memo(() => {
       {
         key: 'history',
         icon: <HistoryOutlined />,
-        label: 'History',
+        label: t('navigation.history'),
       },
       {
         key: 'collections',
         icon: <FolderOutlined />,
-        label: 'Collections',
+        label: t('navigation.collections'),
       },
     ],
-    []
+    [t]
   )
 
   const selectedRequestId = useMemo(() => {

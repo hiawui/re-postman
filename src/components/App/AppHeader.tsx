@@ -1,6 +1,8 @@
 import React from 'react'
 import { Layout, Button, Space, Typography } from 'antd'
 import { EnvironmentOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher'
 
 const { Header } = Layout
 const { Title } = Typography
@@ -11,6 +13,8 @@ interface AppHeaderProps {
 
 export const AppHeader: React.FC<AppHeaderProps> = React.memo(
   ({ onEnvironmentClick }) => {
+    const { t } = useTranslation()
+
     return (
       <Header className="app-header">
         <div className="header-content">
@@ -18,12 +22,13 @@ export const AppHeader: React.FC<AppHeaderProps> = React.memo(
             RePostman
           </Title>
           <Space>
+            <LanguageSwitcher />
             <Button
               icon={<EnvironmentOutlined />}
               size="small"
               onClick={onEnvironmentClick}
             >
-              Environment
+              {t('navigation.environments')}
             </Button>
           </Space>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Input, Select, Row, Col, Button } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 const { TextArea } = Input
 const { Option } = Select
 
@@ -23,6 +24,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
   onChange,
   onBodyTypeChange,
 }) => {
+  const { t } = useTranslation()
   const [bodyType, setBodyType] = useState<BodyType>('json')
   const [formData, setFormData] = useState<FormDataItem[]>([
     { key: '', value: '', type: 'text' },
@@ -156,7 +158,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
           >
             <Col flex="250px">
               <Input
-                placeholder="Key"
+                placeholder={t('request.key')}
                 value={item.key}
                 onChange={e =>
                   handleFormDataChange(index, 'key', e.target.value)
@@ -177,7 +179,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
             </Col>
             <Col flex="250px">
               <Input
-                placeholder="Value"
+                placeholder={t('request.value')}
                 value={item.value}
                 onChange={e =>
                   handleFormDataChange(index, 'value', e.target.value)
@@ -203,8 +205,8 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
                 size="small"
                 style={{ width: 80, fontSize: '12px' }}
               >
-                <Option value="text">Text</Option>
-                <Option value="file">File</Option>
+                <Option value="text">{t('request.text')}</Option>
+                <Option value="file">{t('request.file')}</Option>
               </Select>
             </Col>
             <Col flex="none">
@@ -240,7 +242,9 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
                 marginBottom: 8,
               }}
             >
-              <span style={{ fontSize: '12px' }}>Body Content</span>
+              <span style={{ fontSize: '12px' }}>
+                {t('request.bodyContent')}
+              </span>
               {bodyType === 'json' && (
                 <button
                   onClick={formatBody}
@@ -252,14 +256,20 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
                     fontSize: '12px',
                   }}
                 >
-                  Format JSON
+                  {t('request.formatJson')}
                 </button>
               )}
             </div>
             <TextArea
               value={value}
               onChange={e => handleBodyChange(e.target.value)}
-              placeholder={`Enter ${bodyType.toUpperCase()} content...`}
+              placeholder={
+                bodyType === 'json'
+                  ? t('request.enterJsonContent')
+                  : bodyType === 'xml'
+                    ? t('request.enterXmlContent')
+                    : t('request.enterTextContent')
+              }
               rows={8}
               style={{ fontFamily: 'monospace', fontSize: '12px' }}
             />
@@ -288,22 +298,26 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
           borderBottom: '1px solid #f0f0f0',
         }}
       >
-        Request Body
+        {t('request.requestBody')}
       </div>
 
       <div style={{ marginBottom: 12 }}>
-        <span style={{ marginRight: '8px', fontSize: '12px' }}>Body Type:</span>
+        <span style={{ marginRight: '8px', fontSize: '12px' }}>
+          {t('request.body')} {t('common.type')}:
+        </span>
         <Select
           value={bodyType}
           onChange={handleBodyTypeChange}
           style={{ width: 150 }}
           size="small"
         >
-          <Option value="json">JSON</Option>
-          <Option value="xml">XML</Option>
-          <Option value="text">Text</Option>
-          <Option value="form-data">Form Data</Option>
-          <Option value="x-www-form-urlencoded">x-www-form-urlencoded</Option>
+          <Option value="json">{t('bodyTypes.json')}</Option>
+          <Option value="xml">{t('bodyTypes.xml')}</Option>
+          <Option value="text">{t('bodyTypes.raw')}</Option>
+          <Option value="form-data">{t('bodyTypes.formData')}</Option>
+          <Option value="x-www-form-urlencoded">
+            {t('bodyTypes.xWwwFormUrlencoded')}
+          </Option>
         </Select>
       </div>
 

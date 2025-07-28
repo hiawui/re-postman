@@ -1,6 +1,7 @@
 import React from 'react'
 import { List, Card, Tag, Typography, Empty, Button, Popconfirm } from 'antd'
 import { DeleteOutlined, ClearOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
 import { UrlDisplay } from '@/components/RequestPanel/UrlDisplay'
 import type { HttpRequest } from '@/types'
@@ -16,6 +17,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   onSelectRequest,
   selectedRequestId,
 }) => {
+  const { t } = useTranslation()
   const { history, removeHistoryItem, clearHistory } = useAppStore()
 
   const getMethodColor = (method: string) => {
@@ -47,14 +49,14 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
           alignItems: 'center',
         }}
       >
-        <Text strong>Request History</Text>
+        <Text strong>{t('history.requestHistory')}</Text>
         {history.length > 0 && (
           <Popconfirm
-            title="Clear History"
-            description="Are you sure you want to clear all request history? This action cannot be undone."
+            title={t('history.clearHistoryConfirm')}
+            description={t('history.clearHistoryDescription')}
             onConfirm={handleClearHistory}
-            okText="Clear"
-            cancelText="Cancel"
+            okText={t('common.clear')}
+            cancelText={t('common.cancel')}
             okType="danger"
           >
             <Button
@@ -68,7 +70,10 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
       </div>
 
       {history.length === 0 ? (
-        <Empty description="No requests yet" style={{ marginTop: 40 }} />
+        <Empty
+          description={t('history.noRequestsYet')}
+          style={{ marginTop: 40 }}
+        />
       ) : (
         <List
           dataSource={history}
@@ -116,19 +121,19 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                     <UrlDisplay
                       baseUrl={request.url}
                       params={request.params || []}
-                      showPreview={false} // 历史记录显示原始 URL
+                      showPreview={false} // Show original URL in history
                     />
                   </div>
                   <Popconfirm
-                    title="删除历史记录"
-                    description="确定要删除这条历史记录吗？"
+                    title={t('history.deleteHistoryItem')}
+                    description={t('history.deleteHistoryItemConfirm')}
                     onConfirm={e => {
                       e?.stopPropagation()
                       handleDelete(index)
                     }}
                     onCancel={e => e?.stopPropagation()}
-                    okText="删除"
-                    cancelText="取消"
+                    okText={t('common.delete')}
+                    cancelText={t('common.cancel')}
                     okType="danger"
                   >
                     <Button

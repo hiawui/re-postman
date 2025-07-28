@@ -16,6 +16,7 @@ import {
   EnvironmentOutlined,
   SaveOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { UrlInput } from './UrlInput'
 import { UrlDisplay } from './UrlDisplay'
 import { MethodSelector } from './MethodSelector'
@@ -35,6 +36,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
   tab,
   onRequestAddedToCollection,
 }) => {
+  const { t } = useTranslation()
   const {
     updateRequest,
     sendRequest,
@@ -83,7 +85,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
 
   const handleAddToCollection = () => {
     if (collections.length === 0) {
-      message.warning('请先创建一个 Collection')
+      message.warning(t('request.createCollectionFirst'))
       return
     }
     setRequestName(tab.request.name) // 默认使用当前请求名称
@@ -92,12 +94,12 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
 
   const handleSaveToCollection = () => {
     if (!selectedCollectionId) {
-      message.error('请选择一个 Collection')
+      message.error(t('request.selectCollectionError'))
       return
     }
 
     if (!requestName.trim()) {
-      message.error('请输入请求名称')
+      message.error(t('request.enterRequestNameError'))
       return
     }
     const newRequestName = requestName.trim()
@@ -127,7 +129,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
       onRequestAddedToCollection(addedRequest.id, selectedCollectionId)
     }
 
-    message.success('请求已添加到 Collection')
+    message.success(t('request.requestAddedToCollection'))
     setIsAddToCollectionModalVisible(false)
     setSelectedCollectionId('')
     setRequestName('')
@@ -145,7 +147,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
         body: tab.request.body,
         bodyType: tab.request.bodyType,
       })
-      message.success('请求已保存到 Collection')
+      message.success(t('request.requestSavedToCollection'))
     }
   }
 
@@ -164,7 +166,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
               alignItems: 'center',
             }}
           >
-            <span>Request</span>
+            <span>{t('request.requestTitle')}</span>
             {activeEnvironments.length > 0 && (
               <Tag color="blue" icon={<EnvironmentOutlined />}>
                 {activeEnvironments
@@ -193,10 +195,10 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
                 icon={<SaveOutlined />}
                 onClick={handleAddToCollection}
                 disabled={!tab.request.url || tab.request.url.trim() === ''}
-                title="添加到 Collection"
+                title={t('request.addToCollection')}
                 size="small"
               >
-                Add to Collection
+                {t('request.addToCollection')}
               </Button>
             </Col>
             {tab.sourceCollectionId && tab.sourceRequestId && (
@@ -206,10 +208,10 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
                   icon={<SaveOutlined />}
                   onClick={handleSaveToExistingCollection}
                   disabled={!tab.request.url || tab.request.url.trim() === ''}
-                  title="保存到 Collection"
+                  title={t('request.saveToCollection')}
                   size="small"
                 >
-                  Save
+                  {t('request.save')}
                 </Button>
               </Col>
             )}
@@ -245,7 +247,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
                 }
                 style={{ minWidth: '80px' }}
               >
-                {tab.isLoading ? 'Sending...' : 'Send'}
+                {tab.isLoading ? t('request.sending') : t('request.send')}
               </Button>
             </Col>
             <Col flex="none">
@@ -255,14 +257,14 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
                 size="small"
                 style={{ marginRight: 4 }}
               >
-                Params
+                {t('request.params')}
               </Button>
               <Button
                 type={showHeaders ? 'primary' : 'default'}
                 onClick={() => setShowHeaders((prev: boolean) => !prev)}
                 size="small"
               >
-                Headers
+                {t('request.headers')}
               </Button>
             </Col>
           </Row>
@@ -296,7 +298,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
 
       {/* 添加到 Collection 模态框 */}
       <Modal
-        title="添加到 Collection"
+        title={t('request.addToCollection')}
         open={isAddToCollectionModalVisible}
         onOk={handleSaveToCollection}
         onCancel={() => {
@@ -304,23 +306,23 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
           setSelectedCollectionId('')
           setRequestName('')
         }}
-        okText="保存"
-        cancelText="取消"
+        okText={t('common.ok')}
+        cancelText={t('common.cancel')}
       >
         <div style={{ marginBottom: 16 }}>
-          <p>请求名称：</p>
+          <p>{t('request.requestNameLabel')}</p>
           <Input
-            placeholder="请输入请求名称"
+            placeholder={t('request.requestNamePlaceholder')}
             value={requestName}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setRequestName(e.target.value)
             }
             style={{ marginBottom: 16 }}
           />
-          <p>选择要添加到的 Collection：</p>
+          <p>{t('request.selectCollection')}</p>
           <Select
             style={{ width: '100%' }}
-            placeholder="请选择 Collection"
+            placeholder={t('request.selectCollectionPlaceholder')}
             value={selectedCollectionId}
             onChange={setSelectedCollectionId}
             options={collections.map(collection => ({
