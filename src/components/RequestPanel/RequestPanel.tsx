@@ -29,13 +29,9 @@ import type { Tab, Environment, HttpMethod, BodyType } from '@/types'
 
 interface RequestPanelProps {
   tab: Tab
-  onRequestAddedToCollection?: (requestId: string, collectionId: string) => void
 }
 
-export const RequestPanel: React.FC<RequestPanelProps> = ({
-  tab,
-  onRequestAddedToCollection,
-}) => {
+export const RequestPanel: React.FC<RequestPanelProps> = ({ tab }) => {
   const { t } = useTranslation()
   const {
     updateRequest,
@@ -122,12 +118,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
       sourceRequestId: addedRequest.id,
     })
 
-    updateRequest(tab.id, { name: newRequestName })
-
-    // 通知 CollectionPanel 更新选中状态
-    if (onRequestAddedToCollection) {
-      onRequestAddedToCollection(addedRequest.id, selectedCollectionId)
-    }
+    updateRequest(tab.id, { id: addedRequest.id, name: newRequestName })
 
     message.success(t('request.requestAddedToCollection'))
     setIsAddToCollectionModalVisible(false)
@@ -151,7 +142,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({
     }
   }
 
-  const activeEnvironments = activeEnvironmentIds
+  const activeEnvironments = (activeEnvironmentIds || [])
     .map(id => environments.find(env => env.id === id))
     .filter(Boolean) as Environment[]
 

@@ -16,7 +16,7 @@ interface AppSiderProps {
   }>
   onMenuChange: (key: string) => void
   onSelectRequest: (request: HttpRequest, collectionId?: string) => void
-  selectedRequestId?: string
+  selectedRequestId: string
   collectionSelectedRequestId: string
 }
 

@@ -22,8 +22,6 @@ const App: React.FC = React.memo(() => {
   const [selectedMenu, setSelectedMenu] = useState('history')
   const [siderWidth, setSiderWidth] = useState(300)
   const [isDragging, setIsDragging] = useState(false)
-  const [collectionSelectedRequestId, setCollectionSelectedRequestId] =
-    useState<string>('')
   const dragRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -32,13 +30,6 @@ const App: React.FC = React.memo(() => {
       handleAddTab()
     }
   }, [tabs.length, handleAddTab])
-
-  const handleRequestAddedToCollection = useCallback(
-    (requestId: string, _: string) => {
-      setCollectionSelectedRequestId(requestId)
-    },
-    []
-  )
 
   const handleEnvironmentPanelClose = useCallback(() => {
     setEnvironmentPanelVisible(false)
@@ -69,7 +60,11 @@ const App: React.FC = React.memo(() => {
   )
 
   const selectedRequestId = useMemo(() => {
-    return tabs.find(t => t.id === activeTabId)?.request?.id
+    return tabs.find(t => t.id === activeTabId)?.request?.id || ''
+  }, [tabs, activeTabId])
+
+  const collectionSelectedRequestId = useMemo(() => {
+    return tabs.find(t => t.id === activeTabId)?.request?.id || ''
   }, [tabs, activeTabId])
 
   return (
@@ -103,9 +98,7 @@ const App: React.FC = React.memo(() => {
             />
 
             <Content className="app-content">
-              <TabBar
-                onRequestAddedToCollection={handleRequestAddedToCollection}
-              />
+              <TabBar />
             </Content>
           </Layout>
 

@@ -8,13 +8,9 @@ import type { Tab } from '@/types'
 
 const { TabPane } = Tabs
 
-interface TabBarProps {
-  onRequestAddedToCollection?: (requestId: string, collectionId: string) => void
-}
+interface TabBarProps {}
 
-export const TabBar: React.FC<TabBarProps> = ({
-  onRequestAddedToCollection,
-}) => {
+export const TabBar: React.FC<TabBarProps> = () => {
   const { tabs, activeTabId, addTab, removeTab, setActiveTab } = useAppStore()
 
   const handleTabChange = (activeKey: string) => {
@@ -53,10 +49,7 @@ export const TabBar: React.FC<TabBarProps> = ({
       >
         {tabs.map(tab => (
           <TabPane tab={tab.title} key={tab.id} closable={tabs.length > 1}>
-            <TabContent
-              tab={tab}
-              onRequestAddedToCollection={onRequestAddedToCollection}
-            />
+            <TabContent tab={tab} />
           </TabPane>
         ))}
       </Tabs>
@@ -66,16 +59,12 @@ export const TabBar: React.FC<TabBarProps> = ({
 
 const TabContent: React.FC<{
   tab: Tab
-  onRequestAddedToCollection?: (requestId: string, collectionId: string) => void
-}> = ({ tab, onRequestAddedToCollection }) => {
+}> = ({ tab }) => {
   return (
     <div className="tab-content">
       {/* 请求面板 */}
       <div className="request-section">
-        <RequestPanel
-          tab={tab}
-          onRequestAddedToCollection={onRequestAddedToCollection}
-        />
+        <RequestPanel tab={tab} />
       </div>
 
       {/* 响应面板 */}

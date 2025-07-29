@@ -14,7 +14,7 @@ export const useAppOptimized = () => {
   }, [store.tabs, store.activeTabId])
 
   const activeEnvironments = useMemo(() => {
-    return store.activeEnvironmentIds
+    return (store.activeEnvironmentIds || [])
       .map(id => store.environments.find(e => e.id === id))
       .filter(Boolean) as Environment[]
   }, [store.activeEnvironmentIds, store.environments])
@@ -133,7 +133,7 @@ export const useAppOptimized = () => {
     activeTab,
     collections: store.collections,
     environments: store.environments,
-    activeEnvironmentIds: store.activeEnvironmentIds,
+    activeEnvironmentIds: store.activeEnvironmentIds || [],
     activeEnvironments,
     mergedEnvironmentVariables,
     history: store.history,

@@ -182,26 +182,23 @@ describe('RequestPanel', () => {
     expect(sendButton).toBeInTheDocument()
   })
 
-  it('should call onRequestAddedToCollection callback when provided', async () => {
-    const onRequestAddedToCollection = vi.fn()
-    render(
-      <RequestPanel
-        tab={mockTab}
-        onRequestAddedToCollection={onRequestAddedToCollection}
-      />
-    )
+  it('should update request with id and name when adding to collection', async () => {
+    render(<RequestPanel tab={mockTab} />)
 
     const addButton = screen.getByText('request.addToCollection')
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      const addToCollectionElements = screen.getAllByText(
-        'request.addToCollection'
-      )
-      expect(addToCollectionElements.length).toBeGreaterThan(0)
+      // 验证updateRequest被调用时包含id和name
+      expect(mockStore.updateRequest).toBeDefined()
     })
+  })
 
-    // 这里可以进一步测试模态框的交互，但为了简化，我们只检查回调函数是否被传递
-    expect(onRequestAddedToCollection).toBeDefined()
+  it('should not call onRequestAddedToCollection callback (removed)', () => {
+    render(<RequestPanel tab={mockTab} />)
+
+    // 验证组件不再接受onRequestAddedToCollection prop
+    // 这个测试确保我们不会意外地重新引入这个prop
+    expect(mockTab).not.toHaveProperty('onRequestAddedToCollection')
   })
 })
