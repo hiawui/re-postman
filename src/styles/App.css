@@ -259,7 +259,6 @@ body {
 .tab-bar .ant-tabs-tabpane {
   height: 100%;
   padding: 0;
-  overflow: auto;
 }
 
 /* 标签页内容 */
