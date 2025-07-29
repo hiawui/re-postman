@@ -1,10 +1,22 @@
 import React, { useState } from 'react'
-import { Button, Modal, Form, Input, Space, Empty, Popconfirm } from 'antd'
+import {
+  Button,
+  Modal,
+  Form,
+  Input,
+  Space,
+  Empty,
+  Popconfirm,
+  Upload,
+  message,
+} from 'antd'
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   SettingOutlined,
+  ExportOutlined,
+  ImportOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/stores/appStore'
@@ -34,6 +46,8 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
     reorderRequestsInCollection,
     updateRequestInCollection,
     removeRequestFromCollection,
+    exportCollections,
+    importCollections,
   } = useAppStore()
   const [isAddModalVisible, setIsAddModalVisible] = useState(false)
   const [editingCollection, setEditingCollection] = useState<Collection | null>(
@@ -48,8 +62,62 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
   const [editingCollectionForEdit, setEditingCollectionForEdit] =
     useState<Collection | null>(null)
   const [collectionForm] = Form.useForm()
+  const [isImportModalVisible, setIsImportModalVisible] = useState(false)
+  const [importForm] = Form.useForm()
 
   const [form] = Form.useForm()
+
+  // 导出集合
+  const handleExportCollections = () => {
+    try {
+      const jsonData = exportCollections()
+      const blob = new Blob([jsonData], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `collections-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      message.success(t('collections.exportSuccess'))
+    } catch (error) {
+      message.error(t('collections.exportError'))
+    }
+  }
+
+  // 导入集合
+  const handleImportCollections = async () => {
+    try {
+      const values = await importForm.validateFields()
+      const result = importCollections(values.jsonData)
+
+      if (result.success) {
+        message.success(result.message)
+        setIsImportModalVisible(false)
+        importForm.resetFields()
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      message.error(t('collections.importError'))
+    }
+  }
+
+  // 处理文件上传
+  const handleFileUpload = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = e => {
+      try {
+        const content = e.target?.result as string
+        importForm.setFieldsValue({ jsonData: content })
+        setIsImportModalVisible(true)
+      } catch (error) {
+        message.error(t('collections.fileReadError'))
+      }
+    }
+    reader.readAsText(file)
+  }
 
   const handleAddCollection = () => {
     setIsAddModalVisible(true)
@@ -172,16 +240,43 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
 
   return (
     <div className="collection-panel">
-      <div className="collection-header">
+      <div
+        className="collection-header"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          size="small"
+          onClick={handleAddCollection}
+        >
+          {t('collections.newCollection')}
+        </Button>
         <Space>
           <Button
-            type="primary"
-            icon={<PlusOutlined />}
+            type="default"
+            icon={<ExportOutlined />}
             size="small"
-            onClick={handleAddCollection}
-          >
-            {t('collections.newCollection')}
-          </Button>
+            style={{
+              color: '#666',
+              borderColor: '#d9d9d9',
+              backgroundColor: '#fafafa',
+            }}
+            onClick={handleExportCollections}
+            title={t('collections.exportCollectionsTooltip')}
+          />
+          <Button
+            type="default"
+            icon={<ImportOutlined />}
+            size="small"
+            style={{ color: '#52c41a', borderColor: '#52c41a' }}
+            title={t('collections.importCollectionsTooltip')}
+            onClick={() => setIsImportModalVisible(true)}
+          />
         </Space>
       </div>
 
@@ -419,6 +514,55 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
             rules={[{ required: true, message: t('errors.requiredField') }]}
           >
             <Input placeholder={t('collections.collectionNamePlaceholder')} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Import Collections Modal */}
+      <Modal
+        title={t('collections.importCollections')}
+        open={isImportModalVisible}
+        onOk={handleImportCollections}
+        onCancel={() => {
+          setIsImportModalVisible(false)
+          importForm.resetFields()
+        }}
+        okText={t('common.ok')}
+        cancelText={t('common.cancel')}
+        width={600}
+      >
+        <Form form={importForm} layout="vertical">
+          <Form.Item
+            label={t('collections.importMethod')}
+            style={{ marginBottom: 16 }}
+          >
+            <Space>
+              <Upload
+                beforeUpload={file => {
+                  handleFileUpload(file)
+                  return false
+                }}
+                showUploadList={false}
+                accept=".json"
+              >
+                <Button icon={<ImportOutlined />}>
+                  {t('collections.uploadFile')}
+                </Button>
+              </Upload>
+              <span style={{ color: '#666' }}>
+                {t('collections.orPasteJson')}
+              </span>
+            </Space>
+          </Form.Item>
+          <Form.Item
+            name="jsonData"
+            label={t('collections.importJsonData')}
+            rules={[{ required: true, message: t('errors.requiredField') }]}
+          >
+            <Input.TextArea
+              rows={12}
+              placeholder={t('collections.importJsonDataPlaceholder')}
+            />
           </Form.Item>
         </Form>
       </Modal>

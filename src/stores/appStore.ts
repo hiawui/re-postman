@@ -49,6 +49,8 @@ interface AppStore extends AppState {
     collectionId: string,
     requestIds: string[]
   ) => void
+  exportCollections: () => string
+  importCollections: (jsonData: string) => { success: boolean; message: string }
 
   // 环境管理
   addEnvironment: (environment: Omit<Environment, 'id'>) => void
@@ -363,6 +365,83 @@ export const useAppStore = create<AppStore>()(
                 : c
             ),
           }))
+        },
+
+        // 集合导入导出
+        exportCollections: () => {
+          const state = get()
+          const exportData = {
+            version: '1.0',
+            exportDate: new Date().toISOString(),
+            collections: state.collections.map(collection => ({
+              ...collection,
+              requests: collection.requests.map(request => ({
+                ...request,
+                response: undefined, // 导出时不包含响应数据
+              })),
+            })),
+          }
+          return JSON.stringify(exportData, null, 2)
+        },
+
+        importCollections: (jsonData: string) => {
+          try {
+            const importData = JSON.parse(jsonData)
+
+            // 验证数据结构
+            if (
+              !importData.collections ||
+              !Array.isArray(importData.collections)
+            ) {
+              return {
+                success: false,
+                message: 'Invalid data format: collections array is required',
+              }
+            }
+
+            // 验证每个集合的数据结构
+            for (const collection of importData.collections as any[]) {
+              if (!collection.name || !Array.isArray(collection.requests)) {
+                return {
+                  success: false,
+                  message:
+                    'Invalid collection data: name and requests array are required',
+                }
+              }
+            }
+
+            // 导入集合，为每个集合和请求生成新的ID
+            const importedCollections = (importData.collections as any[]).map(
+              collection => ({
+                ...collection,
+                id: generateId(),
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                requests: (collection.requests as any[]).map(request => ({
+                  ...request,
+                  id: generateId(),
+                  response: undefined,
+                  createdAt: Date.now(),
+                  updatedAt: Date.now(),
+                })),
+                folders: collection.folders || [],
+              })
+            )
+
+            set(state => ({
+              collections: [...state.collections, ...importedCollections],
+            }))
+
+            return {
+              success: true,
+              message: `Successfully imported ${importedCollections.length} collection(s)`,
+            }
+          } catch (error) {
+            return {
+              success: false,
+              message: `Import failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            }
+          }
         },
 
         // 环境管理

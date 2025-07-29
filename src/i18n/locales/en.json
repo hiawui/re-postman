@@ -49,7 +49,7 @@
     "requestSavedToCollection": "Request saved to Collection"
   },
   "collections": {
-    "newCollection": "New Collection",
+    "newCollection": "New",
     "collectionName": "Collection Name",
     "noCollections": "No collections yet",
     "editCollection": "Edit Collection",
@@ -62,7 +62,21 @@
     "editRequestTooltip": "Edit Request",
     "deleteRequestTooltip": "Delete Request",
     "requestNamePlaceholder": "e.g. Get User Info",
-    "collectionNamePlaceholder": "e.g. API Test Collection"
+    "collectionNamePlaceholder": "e.g. API Test Collection",
+    "exportCollections": "Export",
+    "importCollections": "Import",
+    "exportCollectionsTooltip": "Export all collections as JSON",
+    "importCollectionsTooltip": "Import collections from JSON file",
+    "exportSuccess": "Collections exported successfully",
+    "exportError": "Failed to export collections",
+    "importSuccess": "Collections imported successfully",
+    "importError": "Failed to import collections",
+    "fileReadError": "Failed to read file",
+    "importMethod": "Import Method",
+    "uploadFile": "Upload File",
+    "orPasteJson": "or paste JSON data below",
+    "importJsonData": "JSON Data",
+    "importJsonDataPlaceholder": "Paste your collection JSON data here..."
   },
   "history": {
     "requestHistory": "Request History",

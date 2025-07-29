@@ -49,7 +49,7 @@
     "requestSavedToCollection": "请求已保存到集合"
   },
   "collections": {
-    "newCollection": "新建集合",
+    "newCollection": "新建",
     "collectionName": "集合名称",
     "noCollections": "暂无集合",
     "editCollection": "编辑集合",
@@ -62,7 +62,21 @@
     "editRequestTooltip": "编辑请求",
     "deleteRequestTooltip": "删除请求",
     "requestNamePlaceholder": "例如: 获取用户信息",
-    "collectionNamePlaceholder": "例如: API测试集合"
+    "collectionNamePlaceholder": "例如: API测试集合",
+    "exportCollections": "导出",
+    "importCollections": "导入",
+    "exportCollectionsTooltip": "导出所有集合为JSON格式",
+    "importCollectionsTooltip": "从JSON文件导入集合",
+    "exportSuccess": "集合导出成功",
+    "exportError": "集合导出失败",
+    "importSuccess": "集合导入成功",
+    "importError": "集合导入失败",
+    "fileReadError": "文件读取失败",
+    "importMethod": "导入方式",
+    "uploadFile": "上传文件",
+    "orPasteJson": "或在下方粘贴JSON数据",
+    "importJsonData": "JSON数据",
+    "importJsonDataPlaceholder": "在此粘贴您的集合JSON数据..."
   },
   "history": {
     "requestHistory": "请求历史",
