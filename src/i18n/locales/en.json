@@ -76,7 +76,9 @@
     "uploadFile": "Upload File",
     "orPasteJson": "or paste JSON data below",
     "importJsonData": "JSON Data",
-    "importJsonDataPlaceholder": "Paste your collection JSON data here..."
+    "importJsonDataPlaceholder": "Paste your collection JSON data here...",
+    "exportCollectionsConfirm": "Are you sure you want to export all collections?",
+    "exportCollectionsDescription": "This will export all your collections into a single JSON file."
   },
   "history": {
     "requestHistory": "Request History",

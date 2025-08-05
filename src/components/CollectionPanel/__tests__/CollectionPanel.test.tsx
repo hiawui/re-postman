@@ -111,7 +111,7 @@ describe('CollectionPanel', () => {
     expect(importButton).toBeInTheDocument()
   })
 
-  it('handles export collections', async () => {
+  it('handles export collections after confirmation', async () => {
     const mockJsonData = JSON.stringify({ collections: mockCollections })
     mockStore.exportCollections.mockReturnValue(mockJsonData)
 
@@ -121,6 +121,17 @@ describe('CollectionPanel', () => {
       'collections.exportCollectionsTooltip'
     )
     fireEvent.click(exportButton)
+
+    // Check that confirmation dialog appears
+    await waitFor(() => {
+      expect(
+        screen.getByText('collections.exportCollectionsConfirm')
+      ).toBeInTheDocument()
+    })
+
+    // Click the confirm button
+    const confirmButton = screen.getByText('common.ok')
+    fireEvent.click(confirmButton)
 
     await waitFor(() => {
       expect(mockStore.exportCollections).toHaveBeenCalled()

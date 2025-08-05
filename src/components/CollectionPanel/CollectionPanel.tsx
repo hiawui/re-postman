@@ -257,18 +257,25 @@ export const CollectionPanel: React.FC<CollectionPanelProps> = ({
           {t('collections.newCollection')}
         </Button>
         <Space>
-          <Button
-            type="default"
-            icon={<ExportOutlined />}
-            size="small"
-            style={{
-              color: '#666',
-              borderColor: '#d9d9d9',
-              backgroundColor: '#fafafa',
-            }}
-            onClick={handleExportCollections}
-            title={t('collections.exportCollectionsTooltip')}
-          />
+          <Popconfirm
+            title={t('collections.exportCollectionsConfirm')}
+            description={t('collections.exportCollectionsDescription')}
+            onConfirm={handleExportCollections}
+            okText={t('common.ok')}
+            cancelText={t('common.cancel')}
+          >
+            <Button
+              type="default"
+              icon={<ExportOutlined />}
+              size="small"
+              style={{
+                color: '#666',
+                borderColor: '#d9d9d9',
+                backgroundColor: '#fafafa',
+              }}
+              title={t('collections.exportCollectionsTooltip')}
+            />
+          </Popconfirm>
           <Button
             type="default"
             icon={<ImportOutlined />}
