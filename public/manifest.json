@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "RePostman",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A Postman-like Chrome extension for API testing and debugging",
   "permissions": [],
   "host_permissions": [
