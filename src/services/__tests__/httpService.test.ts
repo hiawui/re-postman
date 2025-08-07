@@ -78,6 +78,141 @@ describe('HttpService', () => {
       expect(response.status).toBe(201)
     })
 
+    it('should send a POST request with form-data and filter empty keys', async () => {
+      const mockResponse = {
+        status: 200,
+        statusText: 'OK',
+        headers: new Map([['content-type', 'application/json']]),
+        text: vi.fn().mockResolvedValue('{"message": "success"}'),
+      }
+
+      ;(fetch as any).mockResolvedValue(mockResponse)
+
+      const request: HttpRequest = {
+        id: '1',
+        name: 'Form Data Request',
+        method: 'POST',
+        url: 'https://api.example.com/upload',
+        headers: [],
+        body: 'name=John&age=25&=emptyKey&  =whitespaceKey&city=NYC',
+        bodyType: 'form-data',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+
+      await HttpService.sendRequest(request)
+
+      const call = (fetch as any).mock.calls[0]
+      expect(call[0]).toBe('https://api.example.com/upload')
+      expect(call[1].method).toBe('POST')
+      expect(call[1].body).toBeInstanceOf(FormData)
+
+      // 验证FormData只包含有效的键值对
+      const formData = call[1].body as FormData
+      const formDataEntries = Array.from(formData.entries())
+      expect(formDataEntries).toEqual([
+        ['name', 'John'],
+        ['age', '25'],
+        ['city', 'NYC'],
+      ])
+    })
+
+    it('should send a POST request with x-www-form-urlencoded and filter empty keys', async () => {
+      const mockResponse = {
+        status: 200,
+        statusText: 'OK',
+        headers: new Map([['content-type', 'application/json']]),
+        text: vi.fn().mockResolvedValue('{"message": "success"}'),
+      }
+
+      ;(fetch as any).mockResolvedValue(mockResponse)
+
+      const request: HttpRequest = {
+        id: '1',
+        name: 'URL Encoded Request',
+        method: 'POST',
+        url: 'https://api.example.com/login',
+        headers: [['Content-Type', 'application/x-www-form-urlencoded']],
+        body: 'username=john&password=secret&=emptyKey&  =whitespaceKey&remember=true',
+        bodyType: 'x-www-form-urlencoded',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+
+      await HttpService.sendRequest(request)
+
+      expect(fetch).toHaveBeenCalledWith('https://api.example.com/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'username=john&password=secret&remember=true',
+      })
+    })
+
+    it('should handle form-data with all empty keys', async () => {
+      const mockResponse = {
+        status: 200,
+        statusText: 'OK',
+        headers: new Map([['content-type', 'application/json']]),
+        text: vi.fn().mockResolvedValue('{"message": "success"}'),
+      }
+
+      ;(fetch as any).mockResolvedValue(mockResponse)
+
+      const request: HttpRequest = {
+        id: '1',
+        name: 'Empty Keys Request',
+        method: 'POST',
+        url: 'https://api.example.com/test',
+        headers: [],
+        body: '=value1&  =value2& =value3',
+        bodyType: 'form-data',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+
+      await HttpService.sendRequest(request)
+
+      const call = (fetch as any).mock.calls[0]
+      const formData = call[1].body as FormData
+      const formDataEntries = Array.from(formData.entries())
+      expect(formDataEntries).toEqual([])
+    })
+
+    it('should handle x-www-form-urlencoded with all empty keys', async () => {
+      const mockResponse = {
+        status: 200,
+        statusText: 'OK',
+        headers: new Map([['content-type', 'application/json']]),
+        text: vi.fn().mockResolvedValue('{"message": "success"}'),
+      }
+
+      ;(fetch as any).mockResolvedValue(mockResponse)
+
+      const request: HttpRequest = {
+        id: '1',
+        name: 'Empty Keys URL Encoded Request',
+        method: 'POST',
+        url: 'https://api.example.com/test',
+        headers: [['Content-Type', 'application/x-www-form-urlencoded']],
+        body: '=value1&  =value2& =value3',
+        bodyType: 'x-www-form-urlencoded',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
+
+      await HttpService.sendRequest(request)
+
+      expect(fetch).toHaveBeenCalledWith('https://api.example.com/test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: '',
+      })
+    })
+
     it('should handle network errors gracefully', async () => {
       ;(fetch as any).mockRejectedValue(new Error('Network error'))
 

@@ -324,4 +324,75 @@ describe('BodyEditor', () => {
     expect(valueInputs[0]).toBeInTheDocument()
     expect(valueInputs[1]).toBeInTheDocument()
   })
+
+  it('should show type selector for form-data but not for x-www-form-urlencoded', () => {
+    const propsWithFormData = {
+      ...defaultProps,
+      value: 'key1=value1&key2=value2',
+    }
+
+    render(<BodyEditor {...propsWithFormData} />)
+
+    // 切换到 form-data
+    const typeSelector = screen.getByText(/bodyTypes\.json|JSON/)
+    fireEvent.mouseDown(typeSelector)
+
+    const formDataOption = screen.getByText(/bodyTypes\.formData|Form Data/)
+    fireEvent.click(formDataOption)
+
+    // form-data 应该显示类型选择器 - 检查实际的select元素数量
+    let comboboxes = screen.getAllByRole('combobox')
+    // form-data 应该有主要的body type选择器 + 至少一个类型选择器
+    const formDataComboboxCount = comboboxes.length
+    expect(formDataComboboxCount).toBeGreaterThan(1)
+
+    // 切换到 x-www-form-urlencoded - 使用第一个combobox（主要的body type选择器）
+    const mainCombobox = comboboxes[0]
+    fireEvent.mouseDown(mainCombobox)
+
+    const formUrlencodedOption = screen.getByText(
+      /bodyTypes\.xWwwFormUrlencoded|x-www-form-urlencoded/
+    )
+    fireEvent.click(formUrlencodedOption)
+
+    // x-www-form-urlencoded 不应该显示类型选择器
+    // 重新获取所有 combobox 元素
+    comboboxes = screen.getAllByRole('combobox')
+    const xWwwFormComboboxCount = comboboxes.length
+    // 只应该有主要的 body type 选择器
+    expect(xWwwFormComboboxCount).toBe(1)
+    // 应该比form-data模式下的选择器少
+    expect(xWwwFormComboboxCount).toBeLessThan(formDataComboboxCount)
+  })
+
+  it('should force text type for all form data items in x-www-form-urlencoded', () => {
+    const propsWithFormData = {
+      ...defaultProps,
+      value: 'key1=value1&key2=value2',
+    }
+
+    render(<BodyEditor {...propsWithFormData} />)
+
+    // 切换到 x-www-form-urlencoded
+    const typeSelector = screen.getByText(/bodyTypes\.json|JSON/)
+    fireEvent.mouseDown(typeSelector)
+
+    const formUrlencodedOption = screen.getByText(
+      /bodyTypes\.xWwwFormUrlencoded|x-www-form-urlencoded/
+    )
+    fireEvent.click(formUrlencodedOption)
+
+    // 获取所有输入框
+    const keyInputs = screen.getAllByPlaceholderText('request.key')
+    const valueInputs = screen.getAllByPlaceholderText('request.value')
+
+    // 验证输入框存在但没有类型选择器
+    expect(keyInputs.length).toBeGreaterThan(0)
+    expect(valueInputs.length).toBeGreaterThan(0)
+
+    // 确认没有额外的类型选择下拉框（除了主要的body type选择器）
+    const comboboxes = screen.getAllByRole('combobox')
+    // 只应该有一个主要的body type选择器
+    expect(comboboxes.length).toBe(1)
+  })
 })

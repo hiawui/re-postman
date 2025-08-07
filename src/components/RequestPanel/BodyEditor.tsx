@@ -45,7 +45,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
         items.push({
           key: decodeURIComponent(key),
           value: decodeURIComponent(value),
-          type: 'text',
+          type: 'text', // 默认为 text，对于 x-www-form-urlencoded 总是 text
         })
       }
     })
@@ -57,6 +57,13 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
   useEffect(() => {
     if (bodyType === 'form-data' || bodyType === 'x-www-form-urlencoded') {
       const parsedFormData = parseFormDataFromString(value)
+
+      // 对于 x-www-form-urlencoded，强制所有项的类型为 text
+      if (bodyType === 'x-www-form-urlencoded') {
+        parsedFormData.forEach(item => {
+          item.type = 'text'
+        })
+      }
 
       // 检查最后一行是否为空行，如果不是则添加空行
       const lastItem = parsedFormData[parsedFormData.length - 1]
@@ -111,6 +118,12 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
   ) => {
     const newFormData = [...formData]
     newFormData[index] = { ...newFormData[index], [field]: value }
+
+    // 对于 x-www-form-urlencoded，强制类型为 text
+    if (bodyType === 'x-www-form-urlencoded') {
+      newFormData[index].type = 'text'
+    }
+
     setFormData(newFormData)
 
     // 转换为字符串并更新
@@ -198,17 +211,19 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
                 }}
               />
             </Col>
-            <Col flex="none">
-              <Select
-                value={item.type}
-                onChange={value => handleFormDataChange(index, 'type', value)}
-                size="small"
-                style={{ width: 80, fontSize: '12px' }}
-              >
-                <Option value="text">{t('request.text')}</Option>
-                <Option value="file">{t('request.file')}</Option>
-              </Select>
-            </Col>
+            {bodyType === 'form-data' && (
+              <Col flex="none">
+                <Select
+                  value={item.type}
+                  onChange={value => handleFormDataChange(index, 'type', value)}
+                  size="small"
+                  style={{ width: 80, fontSize: '12px' }}
+                >
+                  <Option value="text">{t('request.text')}</Option>
+                  <Option value="file">{t('request.file')}</Option>
+                </Select>
+              </Col>
+            )}
             <Col flex="none">
               {index !== formData.length - 1 && (
                 <Button

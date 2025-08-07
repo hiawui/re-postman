@@ -118,8 +118,9 @@ export class HttpService {
         const formData = new FormData()
         const pairs = request.body.split('&')
         pairs.forEach(pair => {
-          const [key, value] = pair.split('=')
-          if (key && value) {
+          const [key, value = ''] = pair.split('=')
+          // 过滤掉空key（key为空或只包含空白字符）
+          if (key && key.trim()) {
             formData.append(decodeURIComponent(key), decodeURIComponent(value))
           }
         })
@@ -127,6 +128,15 @@ export class HttpService {
         // 删除 Content-Type，让浏览器自动设置
         delete headers['Content-Type']
         config.headers = headers
+      } else if (request.bodyType === 'x-www-form-urlencoded') {
+        // 处理 x-www-form-urlencoded，过滤空key
+        const pairs = request.body.split('&')
+        const filteredPairs = pairs.filter(pair => {
+          const [key] = pair.split('=')
+          // 过滤掉空key（key为空或只包含空白字符）
+          return key && key.trim()
+        })
+        config.body = filteredPairs.join('&')
       } else {
         // 其他类型直接使用 body 字符串
         config.body = request.body
