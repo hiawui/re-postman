@@ -1,0 +1,5 @@
+---
+description: 测试时使用npm run test:run
+alwaysApply: false
+---
+自动测试时使用 npm run test:run

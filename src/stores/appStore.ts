@@ -237,6 +237,9 @@ export const useAppStore = create<AppStore>()(
               params: tab.request.params ? [...tab.request.params] : undefined,
               body: tab.request.body,
               bodyType: tab.request.bodyType,
+              formData: tab.request.formData
+                ? [...tab.request.formData]
+                : undefined,
               response: response, // 保存响应信息
               createdAt: Date.now(),
               updatedAt: Date.now(),

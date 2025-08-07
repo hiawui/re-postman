@@ -116,14 +116,33 @@ export class HttpService {
       if (request.bodyType === 'form-data') {
         // 处理 FormData
         const formData = new FormData()
-        const pairs = request.body.split('&')
-        pairs.forEach(pair => {
-          const [key, value = ''] = pair.split('=')
-          // 过滤掉空key（key为空或只包含空白字符）
-          if (key && key.trim()) {
-            formData.append(decodeURIComponent(key), decodeURIComponent(value))
-          }
-        })
+
+        // 如果有详细的 formData 数据，使用它
+        if (request.formData && request.formData.length > 0) {
+          request.formData.forEach(item => {
+            if (item.key && item.key.trim()) {
+              if (item.type === 'file' && item.file) {
+                formData.append(item.key, item.file)
+              } else {
+                formData.append(item.key, item.value)
+              }
+            }
+          })
+        } else {
+          // 回退到字符串解析方式
+          const pairs = request.body.split('&')
+          pairs.forEach(pair => {
+            const [key, value = ''] = pair.split('=')
+            // 过滤掉空key（key为空或只包含空白字符）
+            if (key && key.trim()) {
+              formData.append(
+                decodeURIComponent(key),
+                decodeURIComponent(value)
+              )
+            }
+          })
+        }
+
         config.body = formData
         // 删除 Content-Type，让浏览器自动设置
         delete headers['Content-Type']

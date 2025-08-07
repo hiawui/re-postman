@@ -43,6 +43,7 @@
     "value": "值",
     "text": "文本",
     "file": "文件",
+    "selectFile": "选择文件",
     "header": "请求头",
     "enterRequestUrl": "输入请求 URL",
     "requestAddedToCollection": "请求已添加到集合",

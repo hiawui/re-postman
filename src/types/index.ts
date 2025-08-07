@@ -6,6 +6,14 @@ export type BodyType =
   | 'form-data'
   | 'x-www-form-urlencoded'
 
+export interface FormDataItem {
+  key: string
+  value: string
+  type: 'text' | 'file'
+  file?: File | null
+  fileName?: string
+}
+
 export interface HttpRequest {
   id: string
   name: string
@@ -14,6 +22,7 @@ export interface HttpRequest {
   headers: [string, string][]
   body?: string
   bodyType?: BodyType
+  formData?: FormDataItem[] // 新增：用于存储 form-data 的详细数据
   params?: [string, string][]
   response?: HttpResponse
   createdAt: number

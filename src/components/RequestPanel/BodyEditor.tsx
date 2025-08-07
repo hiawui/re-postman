@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Input, Select, Row, Col, Button } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, UploadOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 const { TextArea } = Input
 const { Option } = Select
@@ -9,12 +9,17 @@ interface FormDataItem {
   key: string
   value: string
   type: 'text' | 'file'
+  file?: File | null
+  fileName?: string
 }
 
 interface BodyEditorProps {
   value: string
   onChange: (body: string) => void
   onBodyTypeChange?: (bodyType: string) => void
+  onFormDataChange?: (formData: FormDataItem[]) => void
+  formData?: FormDataItem[]
+  bodyType?: BodyType // 新增：从外部传入的 bodyType
 }
 
 type BodyType = 'json' | 'xml' | 'text' | 'form-data' | 'x-www-form-urlencoded'
@@ -23,12 +28,23 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
   value,
   onChange,
   onBodyTypeChange,
+  onFormDataChange,
+  formData: externalFormData,
+  bodyType: externalBodyType, // 新增：接收外部传入的 bodyType
 }) => {
   const { t } = useTranslation()
-  const [bodyType, setBodyType] = useState<BodyType>('json')
+  const [bodyType, setBodyType] = useState<BodyType>(externalBodyType || 'json')
   const [formData, setFormData] = useState<FormDataItem[]>([
     { key: '', value: '', type: 'text' },
   ])
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // 当外部传入的 bodyType 改变时，更新内部状态
+  useEffect(() => {
+    if (externalBodyType && externalBodyType !== bodyType) {
+      setBodyType(externalBodyType)
+    }
+  }, [externalBodyType, bodyType])
 
   // 从字符串值解析 form-data
   const parseFormDataFromString = (value: string): FormDataItem[] => {
@@ -56,27 +72,34 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
   // 当 value 或 bodyType 改变时，更新 formData
   useEffect(() => {
     if (bodyType === 'form-data' || bodyType === 'x-www-form-urlencoded') {
-      const parsedFormData = parseFormDataFromString(value)
+      let finalFormData: FormDataItem[]
+
+      // 如果有外部传入的 formData，优先使用
+      if (externalFormData && externalFormData.length > 0) {
+        finalFormData = [...externalFormData]
+      } else {
+        finalFormData = parseFormDataFromString(value)
+      }
 
       // 对于 x-www-form-urlencoded，强制所有项的类型为 text
       if (bodyType === 'x-www-form-urlencoded') {
-        parsedFormData.forEach(item => {
+        finalFormData.forEach(item => {
           item.type = 'text'
         })
       }
 
       // 检查最后一行是否为空行，如果不是则添加空行
-      const lastItem = parsedFormData[parsedFormData.length - 1]
+      const lastItem = finalFormData[finalFormData.length - 1]
       if (
         lastItem &&
         (lastItem.key.trim() !== '' || lastItem.value.trim() !== '')
       ) {
-        parsedFormData.push({ key: '', value: '', type: 'text' })
+        finalFormData.push({ key: '', value: '', type: 'text' })
       }
 
-      setFormData(parsedFormData)
+      setFormData(finalFormData)
     }
-  }, [value, bodyType])
+  }, [value, bodyType, externalFormData])
 
   const handleBodyChange = (newValue: string) => {
     onChange(newValue)
@@ -94,7 +117,12 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
       // 将 formData 转换为字符串
       const formDataString = formData
         .filter(item => item.key.trim())
-        .map(item => `${item.key}=${item.value}`)
+        .map(item => {
+          if (item.type === 'file' && item.file) {
+            return `${item.key}=${item.fileName || 'file'}`
+          }
+          return `${item.key}=${item.value}`
+        })
         .join('&')
       onChange(formDataString)
     }
@@ -125,10 +153,42 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
     }
 
     setFormData(newFormData)
+    onFormDataChange?.(newFormData)
 
     // 转换为字符串并更新
     const formDataString = newFormData
-      .map(item => `${item.key}=${item.value}`)
+      .filter(item => item.key.trim())
+      .map(item => {
+        if (item.type === 'file' && item.file) {
+          return `${item.key}=${item.fileName || 'file'}`
+        }
+        return `${item.key}=${item.value}`
+      })
+      .join('&')
+    onChange(formDataString)
+  }
+
+  const handleFileChange = (index: number, file: File | null) => {
+    const newFormData = [...formData]
+    newFormData[index] = {
+      ...newFormData[index],
+      file: file,
+      fileName: file ? file.name : '',
+      value: file ? file.name : '',
+    }
+
+    setFormData(newFormData)
+    onFormDataChange?.(newFormData)
+
+    // 转换为字符串并更新
+    const formDataString = newFormData
+      .filter(item => item.key.trim())
+      .map(item => {
+        if (item.type === 'file' && item.file) {
+          return `${item.key}=${item.fileName || 'file'}`
+        }
+        return `${item.key}=${item.value}`
+      })
       .join('&')
     onChange(formDataString)
   }
@@ -150,13 +210,69 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
   const removeFormDataItem = (index: number) => {
     const newFormData = formData.filter((_, i) => i !== index)
     setFormData(newFormData)
+    onFormDataChange?.(newFormData)
 
     // 转换为字符串并更新
     const formDataString = newFormData
       .filter(item => item.key.trim())
-      .map(item => `${item.key}=${item.value}`)
+      .map(item => {
+        if (item.type === 'file' && item.file) {
+          return `${item.key}=${item.fileName || 'file'}`
+        }
+        return `${item.key}=${item.value}`
+      })
       .join('&')
     onChange(formDataString)
+  }
+
+  const renderFileInput = (item: FormDataItem, index: number) => {
+    if (item.type === 'file') {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button
+            size="small"
+            icon={<UploadOutlined />}
+            onClick={() => fileInputRefs.current[index]?.click()}
+            style={{ fontSize: '12px' }}
+          >
+            {t('request.selectFile')}
+          </Button>
+          {item.fileName && (
+            <span style={{ fontSize: '12px', color: '#666' }}>
+              {item.fileName}
+            </span>
+          )}
+          <input
+            ref={el => (fileInputRefs.current[index] = el)}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={e => {
+              const file = e.target.files?.[0] || null
+              handleFileChange(index, file)
+            }}
+          />
+        </div>
+      )
+    }
+    return (
+      <Input
+        placeholder={t('request.value')}
+        value={item.value}
+        onChange={e => handleFormDataChange(index, 'value', e.target.value)}
+        onFocus={() => handleFormDataFocus(index)}
+        onKeyDown={e => handleFormDataKeyDown(index, e)}
+        size="small"
+        style={{
+          fontSize: '12px',
+          border: 'none',
+          borderBottom: '1px solid #d9d9d9',
+          borderRadius: 0,
+          boxShadow: 'none',
+          paddingLeft: 0,
+          paddingRight: 0,
+        }}
+      />
+    )
   }
 
   const renderFormDataEditor = () => {
@@ -190,27 +306,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({
                 }}
               />
             </Col>
-            <Col flex="250px">
-              <Input
-                placeholder={t('request.value')}
-                value={item.value}
-                onChange={e =>
-                  handleFormDataChange(index, 'value', e.target.value)
-                }
-                onFocus={() => handleFormDataFocus(index)}
-                onKeyDown={e => handleFormDataKeyDown(index, e)}
-                size="small"
-                style={{
-                  fontSize: '12px',
-                  border: 'none',
-                  borderBottom: '1px solid #d9d9d9',
-                  borderRadius: 0,
-                  boxShadow: 'none',
-                  paddingLeft: 0,
-                  paddingRight: 0,
-                }}
-              />
-            </Col>
+            <Col flex="250px">{renderFileInput(item, index)}</Col>
             {bodyType === 'form-data' && (
               <Col flex="none">
                 <Select

@@ -25,7 +25,13 @@ import { HeadersEditor } from './HeadersEditor'
 import { BodyEditor } from './BodyEditor'
 
 import { useAppStore } from '@/stores/appStore'
-import type { Tab, Environment, HttpMethod, BodyType } from '@/types'
+import type {
+  Tab,
+  Environment,
+  HttpMethod,
+  BodyType,
+  FormDataItem,
+} from '@/types'
 
 interface RequestPanelProps {
   tab: Tab
@@ -73,6 +79,10 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ tab }) => {
 
   const handleBodyTypeChange = (bodyType: string) => {
     updateRequest(tab.id, { bodyType: bodyType as BodyType })
+  }
+
+  const handleFormDataChange = (formData: FormDataItem[]) => {
+    updateRequest(tab.id, { formData })
   }
 
   const handleSendRequest = () => {
@@ -137,6 +147,7 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ tab }) => {
         params: tab.request.params,
         body: tab.request.body,
         bodyType: tab.request.bodyType,
+        formData: tab.request.formData,
       })
       message.success(t('request.requestSavedToCollection'))
     }
@@ -282,6 +293,9 @@ export const RequestPanel: React.FC<RequestPanelProps> = ({ tab }) => {
               value={tab.request.body || ''}
               onChange={handleBodyChange}
               onBodyTypeChange={handleBodyTypeChange}
+              onFormDataChange={handleFormDataChange}
+              formData={tab.request.formData}
+              bodyType={tab.request.bodyType}
             />
           )}
         </Space>

@@ -43,6 +43,7 @@
     "value": "Value",
     "text": "Text",
     "file": "File",
+    "selectFile": "Select File",
     "header": "Header",
     "enterRequestUrl": "Enter request URL",
     "requestAddedToCollection": "Request added to Collection",

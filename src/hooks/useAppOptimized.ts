@@ -30,12 +30,33 @@ export const useAppOptimized = () => {
   // 使用useCallback优化函数
   const handleSelectRequest = useCallback(
     (request: HttpRequest, collectionId?: string) => {
+      // 清理 formData 中的无效 file 对象
+      const cleanedFormData =
+        request.formData?.map(item => {
+          // 检查 file 是否为空对象或无效对象
+          if (
+            item.file &&
+            ((typeof item.file === 'object' &&
+              Object.keys(item.file).length === 0) ||
+              !(item.file instanceof File))
+          ) {
+            return {
+              ...item,
+              file: null,
+              fileName: '',
+              value: '',
+            }
+          }
+          return item
+        }) || []
+
       const restoredRequest = {
         ...request,
         headers: request.headers || [],
         params: request.params || [],
         body: request.body || '',
         bodyType: request.bodyType || 'json',
+        formData: cleanedFormData,
         response: request.response,
       }
 

@@ -395,4 +395,165 @@ describe('BodyEditor', () => {
     // 只应该有一个主要的body type选择器
     expect(comboboxes.length).toBe(1)
   })
+
+  describe('form-data file upload', () => {
+    it('should handle file type selection', () => {
+      const { getByText } = render(
+        <BodyEditor value="" onChange={vi.fn()} onBodyTypeChange={vi.fn()} />
+      )
+
+      // 切换到 form-data 类型
+      const typeSelector = getByText(/bodyTypes\.json|JSON/)
+      fireEvent.mouseDown(typeSelector)
+
+      const formDataOption = getByText(/bodyTypes\.formData|Form Data/)
+      fireEvent.click(formDataOption)
+
+      // 检查类型选择器是否出现
+      const typeSelect = getByText(/request\.text|Text/)
+      expect(typeSelect).toBeInTheDocument()
+
+      // 切换到文件类型
+      fireEvent.mouseDown(typeSelect)
+      const fileOption = getByText(/request\.file|File/)
+      fireEvent.click(fileOption)
+
+      // 检查文件选择按钮是否出现
+      expect(getByText(/request\.selectFile|选择文件/)).toBeInTheDocument()
+    })
+
+    it('should handle file selection', () => {
+      const { getByText } = render(
+        <BodyEditor value="" onChange={vi.fn()} onBodyTypeChange={vi.fn()} />
+      )
+
+      // 切换到 form-data 类型
+      const typeSelector = getByText(/bodyTypes\.json|JSON/)
+      fireEvent.mouseDown(typeSelector)
+
+      const formDataOption = getByText(/bodyTypes\.formData|Form Data/)
+      fireEvent.click(formDataOption)
+
+      // 切换到文件类型
+      const typeSelect = getByText(/request\.text|Text/)
+      fireEvent.mouseDown(typeSelect)
+      const fileOption = getByText(/request\.file|File/)
+      fireEvent.click(fileOption)
+
+      // 创建模拟文件
+      const file = new File(['test content'], 'test.txt', {
+        type: 'text/plain',
+      })
+
+      // 模拟文件选择
+      const fileInput = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement
+      fireEvent.change(fileInput, { target: { files: [file] } })
+
+      // 检查文件名是否显示
+      expect(getByText('test.txt')).toBeInTheDocument()
+    })
+  })
+
+  it('should restore bodyType from external prop', () => {
+    const mockOnChange = vi.fn()
+    const mockOnBodyTypeChange = vi.fn()
+
+    render(
+      <BodyEditor
+        value=""
+        onChange={mockOnChange}
+        onBodyTypeChange={mockOnBodyTypeChange}
+        bodyType="form-data"
+      />
+    )
+
+    // 检查初始状态是否正确设置为 form-data
+    expect(screen.getByText('bodyTypes.formData')).toBeInTheDocument()
+  })
+
+  it('should update bodyType when external prop changes', () => {
+    const mockOnChange = vi.fn()
+    const mockOnBodyTypeChange = vi.fn()
+
+    const { rerender } = render(
+      <BodyEditor
+        value=""
+        onChange={mockOnChange}
+        onBodyTypeChange={mockOnBodyTypeChange}
+        bodyType="json"
+      />
+    )
+
+    // 初始状态应该是 json
+    expect(screen.getByText('bodyTypes.json')).toBeInTheDocument()
+
+    // 更新 bodyType 为 xml
+    rerender(
+      <BodyEditor
+        value=""
+        onChange={mockOnChange}
+        onBodyTypeChange={mockOnBodyTypeChange}
+        bodyType="xml"
+      />
+    )
+
+    // 检查是否更新为 xml
+    expect(screen.getByText('bodyTypes.xml')).toBeInTheDocument()
+  })
+
+  it('should clean invalid file objects when restoring from collection or history', () => {
+    const mockOnChange = vi.fn()
+    const mockOnBodyTypeChange = vi.fn()
+
+    // 模拟包含无效 file 对象的 formData（使用 any 类型来模拟序列化后的数据）
+    const invalidFormData = [
+      {
+        key: 'textField',
+        value: 'text value',
+        type: 'text' as const,
+        file: null,
+        fileName: '',
+      },
+      {
+        key: 'fileField',
+        value: 'file.txt',
+        type: 'file' as const,
+        file: {} as any, // 空对象，应该被清理
+        fileName: 'file.txt',
+      },
+      {
+        key: 'validFileField',
+        value: 'valid.txt',
+        type: 'file' as const,
+        file: new File(['content'], 'valid.txt'), // 有效的 File 对象
+        fileName: 'valid.txt',
+      },
+    ] as any
+
+    render(
+      <BodyEditor
+        value=""
+        onChange={mockOnChange}
+        onBodyTypeChange={mockOnBodyTypeChange}
+        bodyType="form-data"
+        formData={invalidFormData}
+      />
+    )
+
+    // 检查是否显示了 form-data 编辑器
+    expect(
+      screen.getAllByPlaceholderText('request.key').length
+    ).toBeGreaterThan(0)
+    expect(
+      screen.getAllByPlaceholderText('request.value').length
+    ).toBeGreaterThan(0)
+
+    // 检查是否显示了正确的数据
+    expect(screen.getByDisplayValue('textField')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('text value')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('fileField')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('validFileField')).toBeInTheDocument()
+  })
 })
