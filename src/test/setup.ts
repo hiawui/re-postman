@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import React from 'react'
 import { vi } from 'vitest'
 
 // Mock Chrome API
@@ -86,4 +87,11 @@ vi.mock('react-i18next', () => ({
     type: '3rdParty',
     init: vi.fn(),
   },
+  withTranslation: () => (Component: React.ComponentType<any>) =>
+    function WithTranslationWrapper(props: any) {
+      return React.createElement(Component, {
+        ...props,
+        t: (key: string) => key,
+      })
+    },
 }))

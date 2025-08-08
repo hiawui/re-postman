@@ -1,8 +1,9 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 import { Result, Button } from 'antd'
+import { withTranslation, type WithTranslation } from 'react-i18next'
 import { ErrorHandler, type AppError } from '@/utils/errorHandler'
 
-interface Props {
+interface Props extends WithTranslation {
   children: ReactNode
   fallback?: ReactNode
 }
@@ -12,7 +13,7 @@ interface State {
   error?: AppError
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+class ErrorBoundaryInner extends Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = { hasError: false }
@@ -41,6 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      const { t } = this.props
       // 如果有自定义fallback，使用它
       if (this.props.fallback) {
         return this.props.fallback
@@ -50,14 +52,14 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <Result
           status="error"
-          title="应用出现错误"
-          subTitle={this.state.error?.message || '发生了未知错误'}
+          title={t('services.operationFailed')}
+          subTitle={this.state.error?.message || t('services.unknownError')}
           extra={[
             <Button type="primary" key="reset" onClick={this.handleReset}>
-              重新加载
+              {t('common.ok')}
             </Button>,
             <Button key="report" onClick={() => window.location.reload()}>
-              刷新页面
+              {t('request.send')}
             </Button>,
           ]}
         />
@@ -67,3 +69,5 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children
   }
 }
+
+export const ErrorBoundary = withTranslation()(ErrorBoundaryInner)
