@@ -13,6 +13,13 @@
     "environments": "Environments",
     "history": "History"
   },
+  "feedback": {
+    "feedback": "Feedback",
+    "reportIssue": "Report Issue",
+    "rateExtension": "Rate Extension",
+    "githubIssues": "GitHub",
+    "chromeWebStore": "Chrome Web Store"
+  },
   "request": {
     "body": "Body",
     "headers": "Headers",

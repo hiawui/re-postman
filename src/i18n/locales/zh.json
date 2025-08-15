@@ -13,6 +13,13 @@
     "environments": "环境",
     "history": "历史"
   },
+  "feedback": {
+    "feedback": "问题反馈",
+    "reportIssue": "报告问题",
+    "rateExtension": "评价插件",
+    "githubIssues": "GitHub",
+    "chromeWebStore": "Chrome应用商店"
+  },
   "request": {
     "body": "请求体",
     "headers": "请求头",

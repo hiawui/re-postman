@@ -1,4 +1,0 @@
----
-description: 每次新增或修改代码后, 在request任务完成后自动格式化代码
-alwaysApply: false
----
