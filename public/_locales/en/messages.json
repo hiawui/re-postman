@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "RePostman",
+    "description": "The name of the extension"
+  },
+  "extensionDescription": {
+    "message": "A Postman-like Chrome extension for API testing and debugging",
+    "description": "The description of the extension"
+  }
+}
