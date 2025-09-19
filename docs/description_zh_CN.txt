@@ -1,0 +1,31 @@
+RePostman 是一款为开发者和测试人员打造的全功能 API 测试工具，让你可以直接在浏览器中高效、便捷地测试各种 API。
+
+🔧 主要特性：
+• 支持发送多种 HTTP 请求（GET、POST、PUT、DELETE 等）
+• 多种请求体格式支持（JSON、Form Data、x-www-form-urlencoded）
+• 请求历史记录，可一键恢复参数
+• 请求集合管理，支持拖拽排序与组织
+• 环境变量系统，支持优先级合并
+• 响应预览，支持 JSON/XML 格式化及 HTML/Markdown 渲染
+• Chrome 扩展架构，完美集成浏览器
+
+🚀 适用场景：
+• API 开发与测试
+• 后端服务验证
+• Web 服务调试
+• RESTful API 探索
+• 集成开发工作流
+
+💡 为什么选择 RePostman？
+• 轻量快速
+• 无需注册账号
+• 离线可用
+• 现代直观的界面
+
+🙏 欢迎反馈与建议
+欢迎一切关于 RePostman 的问题反馈、功能建议或 PR 贡献，帮助我们共同打造更好用的 API 测试工具！
+
+📌 项目地址：
+https://github.com/hiawui/re-postman
+
+🙏 感谢 Postman：深受 Postman 启发，感谢它为开发者社区树立了 API 测试工具的行业标杆。

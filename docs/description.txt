@@ -1,0 +1,31 @@
+RePostman is a comprehensive API testing tool built for developers and testers, enabling you to efficiently test APIs directly in your browser.
+
+🔧 Key Features:
+• Supports multiple HTTP request methods (GET, POST, PUT, DELETE, etc.)
+• Supports multiple request body formats (JSON, Form Data, x-www-form-urlencoded)
+• Request history with one-click parameter recovery
+• Request collection management with drag-and-drop sorting and organization
+• Environment variable system with priority-based merging
+• Response preview with JSON/XML formatting and HTML/Markdown rendering
+• Chrome extension architecture with seamless browser integration
+
+🚀 Use Cases:
+• API development and testing
+• Backend service testing
+• Web service debugging
+• RESTful API exploration
+• Development workflow integration
+
+💡 Why Choose RePostman?
+• Lightweight and fast
+• No account registration needed
+• Works offline
+• Modern and intuitive interface
+
+🙏 Feedback and Suggestions Welcome
+We welcome all feedback, feature suggestions, and PR contributions to help us build a better API testing tool together!
+
+📌 Project Repository:
+https://github.com/hiawui/re-postman
+
+🙏 Thanks to Postman: Inspired by Postman, we thank it for establishing the industry standard for API testing tools in the developer community.
