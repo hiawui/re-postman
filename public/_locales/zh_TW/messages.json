@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "RePostman",
+    "description": "擴充功能名稱"
+  },
+  "extensionDescription": {
+    "message": "一個類似Postman的Chrome擴充功能，用於API測試和除錯",
+    "description": "擴充功能描述"
+  }
+}

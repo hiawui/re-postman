@@ -16,27 +16,47 @@ const LanguageSwitcher: React.FC = () => {
 
   // 支持的语言配置
   const supportedLanguages: LanguageOption[] = [
-    { value: 'zh', label: '中文', displayName: '中文' },
     { value: 'en', label: 'English', displayName: 'English' },
+    { value: 'zh', label: '简体中文', displayName: '简体中文' },
+    { value: 'zh-TW', label: '繁體中文', displayName: '繁體中文' },
+    { value: 'ja', label: '日本語', displayName: '日本語' },
   ]
 
   // 语言映射表，用于处理各种语言变体
   const languageMapping: Record<string, string> = {
-    zh: 'zh',
-    'zh-CN': 'zh',
-    'zh-TW': 'zh',
-    'zh-HK': 'zh',
-    'zh-SG': 'zh',
     en: 'en',
     'en-US': 'en',
     'en-GB': 'en',
     'en-CA': 'en',
     'en-AU': 'en',
+    zh: 'zh',
+    'zh-CN': 'zh',
+    'zh-TW': 'zh-TW',
+    'zh-HK': 'zh-TW',
+    'zh-SG': 'zh',
+    ja: 'ja',
+    'ja-JP': 'ja',
   }
 
   const handleLanguageChange = (language: string) => {
     // 根据选择的语言，设置最合适的语言代码
-    const languageCode = language === 'zh' ? 'zh-CN' : 'en-US'
+    let languageCode: string
+    switch (language) {
+      case 'zh':
+        languageCode = 'zh-CN'
+        break
+      case 'zh-TW':
+        languageCode = 'zh-TW'
+        break
+      case 'ja':
+        languageCode = 'ja-JP'
+        break
+      case 'en':
+        languageCode = 'en-US'
+        break
+      default:
+        languageCode = 'en-US'
+    }
     i18n.changeLanguage(languageCode)
   }
 
@@ -56,7 +76,7 @@ const LanguageSwitcher: React.FC = () => {
     }
 
     // 如果都不匹配，返回默认语言
-    return 'zh'
+    return 'en'
   }
 
   return (
